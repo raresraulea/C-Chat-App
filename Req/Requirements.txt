@@ -12,25 +12,29 @@ Arhitectura generala este urmatoarea:
 Scurta descriere a fiecarei componente:
 -Client: 
 	-are posibilitatea de a se conecta la server:
--folosind contul deja creat (login)
--creand un cont nou (sign up)
--poate trimite mesaje private sau de grup catre ceilalt utilizaori conectati la server
--are posibilitatea de a se deconecta de la server
--poate vedea ceilalti useri care sunt online pe server
+	-folosind contul deja creat (login)
+	-creand un cont nou (sign up)
+	-poate trimite mesaje private sau de grup catre ceilalt utilizaori conectati la server
+	-are posibilitatea de a se deconecta de la server
+	-poate vedea ceilalti useri care sunt online pe server
 -Server: 
 	-se ocupa de urmatoarele taskuri:
 		-Login
 		-Sign Up
 		-transmitere mesaje UI Client <-> BD
 		-initiere stergere a utilizatorului din BD
-		-trateaza clientii
+		-trateaza mesajele clientilor
 -BD:
 	-contine in principal doua tabele:
 		-USER si MESSAGES
 	-in tabelul USER se stocheaza urmatoarele despre utilizatori:
 		-ID, parola, IP, nume, nivel de acces
--in tabelul MESSAGES se stocheaza urmatorele despre mesajele trimise de utilizatori:
+	-in tabelul MESSAGES se stocheaza urmatorele despre mesajele trimise de utilizatori:
 	-ID, sender, receiver, message, tip mesaj (privat/grup)
 	
-
+-Administratorul:
+	-poate bloca utilizatori din a trimite mesaje
+	-poate trimite o atentionare utilizatorilor
+	-are posibilitatea de a ramane Offline pentru ceilalti utilizatori
+	-poate sterge contul utilziatorilor
 

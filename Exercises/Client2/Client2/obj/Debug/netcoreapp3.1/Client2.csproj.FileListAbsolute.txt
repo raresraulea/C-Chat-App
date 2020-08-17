@@ -1,0 +1,11 @@
+D:\Client-Server\Client2\Client2\bin\Debug\netcoreapp3.1\Client2.exe
+D:\Client-Server\Client2\Client2\bin\Debug\netcoreapp3.1\Client2.deps.json
+D:\Client-Server\Client2\Client2\bin\Debug\netcoreapp3.1\Client2.runtimeconfig.json
+D:\Client-Server\Client2\Client2\bin\Debug\netcoreapp3.1\Client2.runtimeconfig.dev.json
+D:\Client-Server\Client2\Client2\bin\Debug\netcoreapp3.1\Client2.dll
+D:\Client-Server\Client2\Client2\bin\Debug\netcoreapp3.1\Client2.pdb
+D:\Client-Server\Client2\Client2\obj\Debug\netcoreapp3.1\Client2.csprojAssemblyReference.cache
+D:\Client-Server\Client2\Client2\obj\Debug\netcoreapp3.1\Client2.AssemblyInfoInputs.cache
+D:\Client-Server\Client2\Client2\obj\Debug\netcoreapp3.1\Client2.AssemblyInfo.cs
+D:\Client-Server\Client2\Client2\obj\Debug\netcoreapp3.1\Client2.dll
+D:\Client-Server\Client2\Client2\obj\Debug\netcoreapp3.1\Client2.pdb

@@ -10,8 +10,6 @@ namespace Server
     class Database
     {
         public SQLiteConnection myConnection;
-        //DataTable local = new DT;
-
         public Database()
         {
             myConnection = new SQLiteConnection("Data Source=database.sqlite3");
@@ -21,11 +19,6 @@ namespace Server
                 Console.WriteLine("Database file created");
             }
             myConnection.Open();
-        }
-
-        internal void checkUsernameAndPassword(string username, string password)
-        {
-            throw new NotImplementedException();
         }
 
         public int ExecuteWrite(string query, Dictionary<string, object> args)
@@ -128,6 +121,35 @@ namespace Server
 
             return user;
         }
+        public void checkCredentials(string username, string password)
+        {
+            var query = "SELECT * FROM USERS WHERE Username = @Username AND Password = @Password";
 
+            var args = new Dictionary<string, object>
+            {
+                {"@Username", username},
+                {"@Password", password}
+            };
+
+            DataTable dt = ExecuteRead(query, args);
+
+            if (dt == null || dt.Rows.Count == 0)
+                Console.WriteLine("Username and password do not match!");
+
+            Console.WriteLine("Login Successful"); 
+        }
+        public int saveMessageToDb(Message message)
+        {
+            const string query = "INSERT INTO MESSAGES(Message, Sender, Receiver) VALUES(@Message, @Sender, @Receiver)";
+
+            var args = new Dictionary<string, object>
+            {
+                 {"@Message", message.MessageText},
+                 {"@Receiver", message.Receiver},
+                 {"@Sender", message.Sender}
+            };
+
+            return ExecuteWrite(query, args);
+        }
     }
 }

@@ -4,10 +4,29 @@ using System.Text;
 
 namespace Server
 {
+
     class Login
     {
         private string username;
         private string password;
+        private static Login instance = null;
+
+        private Login()
+        {
+        }
+        public static Login Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new Login();
+                return instance;
+            }
+        }
+
+
+
+
 
         public void editUsername(string username)
         {
@@ -18,9 +37,9 @@ namespace Server
 
         }
 
-        internal void verifyLoginData(string username, string password)
+        public void verifyLoginData(string username, string password)
         {
-            Server.serverDatabase.checkUsernameAndPassword(username, password);
+            Server.serverDatabase.checkCredentials(username, password);
         }
         public void verifyPassword(string password)
         {

@@ -13,11 +13,13 @@ namespace Server
         public void connectToDatabase(Database database)
         {
             serverDatabase = database;
+            Console.WriteLine("Connected to Database...");
         }
         public void run()
         {
             TcpListener listener = new TcpListener(System.Net.IPAddress.Any, 1302);
             listener.Start();
+            Console.WriteLine("Server started...");
             while (true)
             {
                 Console.WriteLine("Waiting for connection...");
@@ -56,9 +58,9 @@ namespace Server
             Console.WriteLine("Client accepted...");
             return client;
         }
-        public void handleLogin(string username, string password)
+        public static void handleLogin(string username, string password)
         {
-            Login login = new Login();
+            Login login = Login.Instance;
             login.verifyLoginData(username, password);
         }
         public static void getChatHistoryFromDB()
@@ -113,9 +115,9 @@ namespace Server
         {
 
         }
-        public void saveMessageToDB()
+        public static void saveMessageToDB(Message message)
         {
-
+            serverDatabase.saveMessageToDb(message);
         }
         public void disconnectFromClient()
         {

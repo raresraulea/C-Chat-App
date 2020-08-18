@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\raresraulea1\\Desktop\\C# Chat App NTT\\C-Chat-App\\Exercises\\Server\\Client\\Client.csproj": {}
+    "C:\\Users\\raresraulea1\\Desktop\\C# Chat App NTT\\C-Chat-App\\Code\\Server\\Server\\Server\\Server.csproj": {}
   },
   "projects": {
-    "C:\\Users\\raresraulea1\\Desktop\\C# Chat App NTT\\C-Chat-App\\Exercises\\Server\\Client\\Client.csproj": {
+    "C:\\Users\\raresraulea1\\Desktop\\C# Chat App NTT\\C-Chat-App\\Code\\Server\\Server\\Server\\Server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\raresraulea1\\Desktop\\C# Chat App NTT\\C-Chat-App\\Exercises\\Server\\Client\\Client.csproj",
-        "projectName": "Client",
-        "projectPath": "C:\\Users\\raresraulea1\\Desktop\\C# Chat App NTT\\C-Chat-App\\Exercises\\Server\\Client\\Client.csproj",
+        "projectUniqueName": "C:\\Users\\raresraulea1\\Desktop\\C# Chat App NTT\\C-Chat-App\\Code\\Server\\Server\\Server\\Server.csproj",
+        "projectName": "Server",
+        "projectPath": "C:\\Users\\raresraulea1\\Desktop\\C# Chat App NTT\\C-Chat-App\\Code\\Server\\Server\\Server\\Server.csproj",
         "packagesPath": "C:\\Users\\raresraulea1\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\raresraulea1\\Desktop\\C# Chat App NTT\\C-Chat-App\\Exercises\\Server\\Client\\obj\\",
+        "outputPath": "C:\\Users\\raresraulea1\\Desktop\\C# Chat App NTT\\C-Chat-App\\Code\\Server\\Server\\Server\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\raresraulea1\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -37,6 +37,12 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
+          "dependencies": {
+            "System.Data.SQLite": {
+              "target": "Package",
+              "version": "[1.0.113.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

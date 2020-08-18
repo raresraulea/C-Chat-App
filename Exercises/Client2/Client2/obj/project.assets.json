@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Client-Server\\Client2\\Client2\\Client2.csproj",
+      "projectUniqueName": "C:\\Users\\raresraulea1\\Desktop\\C# Chat App NTT\\C-Chat-App\\Exercises\\Client2\\Client2\\Client2.csproj",
       "projectName": "Client2",
-      "projectPath": "D:\\Client-Server\\Client2\\Client2\\Client2.csproj",
+      "projectPath": "C:\\Users\\raresraulea1\\Desktop\\C# Chat App NTT\\C-Chat-App\\Exercises\\Client2\\Client2\\Client2.csproj",
       "packagesPath": "C:\\Users\\raresraulea1\\.nuget\\packages\\",
-      "outputPath": "D:\\Client-Server\\Client2\\Client2\\obj\\",
+      "outputPath": "C:\\Users\\raresraulea1\\Desktop\\C# Chat App NTT\\C-Chat-App\\Exercises\\Client2\\Client2\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\raresraulea1\\AppData\\Roaming\\NuGet\\NuGet.Config",

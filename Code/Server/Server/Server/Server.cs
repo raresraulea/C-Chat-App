@@ -9,6 +9,7 @@ namespace Server
     class Server
     {
         public static Database serverDatabase;
+        public static List<User> onlineUsers = new List<User>();
 
         public void connectToDatabase(Database database)
         {

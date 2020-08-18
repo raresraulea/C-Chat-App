@@ -4,6 +4,7 @@ using System.Text;
 using System.Data.SQLite;
 using System.IO;
 using System.Data;
+using System.Linq;
 
 namespace Server
 {
@@ -37,6 +38,26 @@ namespace Server
 
             return numberOfRowsAffected;
         }
+
+        public bool usernameAvailable(string username)
+        {
+            var query = "SELECT * FROM USERS WHERE Username = @Username";
+
+            var args = new Dictionary<string, object>
+            {
+                {"@Username", username}
+            };
+
+            DataTable dt = ExecuteRead(query, args);
+
+            if (dt == null || dt.Rows.Count == 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public int AddUser(User user)
         {
             const string query = "INSERT INTO USERS(Username, Password) VALUES(@Username, @Password)";
@@ -135,11 +156,9 @@ namespace Server
 
             if (dt == null || dt.Rows.Count == 0)
             {
-                Console.WriteLine("Username and password do not match!");
                 return false;
             }
 
-            Console.WriteLine("Login Successful");
             return true;
         }
         public int saveMessageToDb(Message message)
@@ -178,6 +197,31 @@ namespace Server
             };
 
             return ExecuteWrite(query, args);
+        }
+        public List<Message> getChatHistoryFromDb(User participant1, User participant2)
+        {
+            var query = "SELECT * FROM MESSAGES WHERE Sender = @Sender AND Receiver = @Receiver";
+
+            var args = new Dictionary<string, object>
+            {
+                {"@Sender", participant1.username},
+                {"@Receiver", participant2.username}
+            };
+
+            List<Message> messageList = new List<Message>();
+            DataTable dt = ExecuteRead(query, args);
+            if (dt == null || dt.Rows.Count == 0)
+            {
+               
+            }
+            messageList = (from DataRow dr in dt.Rows
+                           select new Message()
+                           {
+                               MessageText = dr["Message"].ToString()
+                           }
+                           ).ToList();
+
+            return messageList;
         }
     }
 }

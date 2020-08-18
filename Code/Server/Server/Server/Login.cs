@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Server
@@ -7,10 +8,7 @@ namespace Server
 
     class Login
     {
-        private string username;
-        private string password;
         private static Login instance = null;
-        public List<User> onlineUsers = new List<User>();
 
         private Login()
         {
@@ -32,21 +30,28 @@ namespace Server
                 LoginToServer(user);
             }
             else
-                Console.WriteLine("Try Again!");
+            {
+                SignUp(user);
+                LoginToServer(user);
+            }
+        }
+
+        private void SignUp(User user)
+        {
+            if(Server.serverDatabase.usernameAvailable(user.username))
+            {
+                Server.serverDatabase.AddUser(user);
+                Console.WriteLine(user.username + " has created his account!");
+            }
+            else Console.WriteLine("Username already taken!");
         }
 
         private void LoginToServer(User user)
         {
-            Console.WriteLine(user.username + "logged in to server!");
+            Console.WriteLine(user.username + " logged in to server!");
+            if (Server.onlineUsers.Where(x => x.username == user.username).Count() < 1)
+                Server.onlineUsers.Add(user);
         }
 
-        public void verifyPassword(string password)
-        {
-
-        }
-        public void verifyUsername(string username)
-        {
-
-        }
     }
 }

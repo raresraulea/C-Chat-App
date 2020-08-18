@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace Server
@@ -42,6 +44,16 @@ namespace Server
         public void deleteConversation(string partnerUsername)
         {
             Server.serverDatabase.DeleteConversation(this.username, partnerUsername);
+        }
+        public void getMessagesWith(User user)
+        {
+            List<Message> list = new List<Message>();
+            list = Server.serverDatabase.getChatHistoryFromDb(this, user);
+            //List<string> stringMessages = list.Where(x => x.GetType() == string)
+            foreach(Message msg in list)
+            {
+                System.Console.WriteLine(msg.MessageText);
+            }
         }
     }
 }

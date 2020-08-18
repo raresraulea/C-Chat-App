@@ -22,6 +22,12 @@ namespace Server
             }
             myConnection.Open();
         }
+
+        internal void checkUsernameAndPassword(string username, string password)
+        {
+            throw new NotImplementedException();
+        }
+
         public int ExecuteWrite(string query, Dictionary<string, object> args)
         {
             int numberOfRowsAffected;

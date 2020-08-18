@@ -121,7 +121,7 @@ namespace Server
 
             return user;
         }
-        public void checkCredentials(string username, string password)
+        public bool checkCredentials(string username, string password)
         {
             var query = "SELECT * FROM USERS WHERE Username = @Username AND Password = @Password";
 
@@ -134,9 +134,13 @@ namespace Server
             DataTable dt = ExecuteRead(query, args);
 
             if (dt == null || dt.Rows.Count == 0)
+            {
                 Console.WriteLine("Username and password do not match!");
+                return false;
+            }
 
-            Console.WriteLine("Login Successful"); 
+            Console.WriteLine("Login Successful");
+            return true;
         }
         public int saveMessageToDb(Message message)
         {
@@ -147,6 +151,30 @@ namespace Server
                  {"@Message", message.MessageText},
                  {"@Receiver", message.Receiver},
                  {"@Sender", message.Sender}
+            };
+
+            return ExecuteWrite(query, args);
+        }
+        public int DeleteMessageFromDb(Message message)
+        {
+            const string query = "Delete from MESSAGES WHERE Message = @Message";
+
+            var args = new Dictionary<string, object>
+            {
+                {"@Message", message.MessageText}
+            };
+
+            return ExecuteWrite(query, args);
+
+        }
+        public int DeleteConversation(string participant1, string participant2)
+        {
+            const string query = "Delete from MESSAGES WHERE Sender = @Sender AND Receiver = @Receiver";
+
+            var args = new Dictionary<string, object>
+            {
+                {"@Receiver", participant2},
+                {"@Sender", participant1}
             };
 
             return ExecuteWrite(query, args);

@@ -58,10 +58,10 @@ namespace Server
             Console.WriteLine("Client accepted...");
             return client;
         }
-        public static void handleLogin(string username, string password)
+        public static void handleLogin(User user)
         {
             Login login = Login.Instance;
-            login.verifyLoginData(username, password);
+            login.verifyLoginData(user);
         }
         public static void getChatHistoryFromDB()
         {

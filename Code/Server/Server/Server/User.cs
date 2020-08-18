@@ -22,9 +22,9 @@ namespace Server
         public User()
         {
         }
-        public void Login(string username, string password)
+        public void Login()
         {
-            Server.handleLogin(username, password);
+            Server.handleLogin(this);
         }
         public void sendMessage(string messageText, User destinationUser)
         {
@@ -32,6 +32,16 @@ namespace Server
             msg.Sender = this.username;
             Server.serverDatabase.saveMessageToDb(msg);
             
+        }
+        public void deleteMessage(string messageText)
+        {
+            Message msg = new Message(messageText);
+            msg.Sender = this.username;
+            Server.serverDatabase.DeleteMessageFromDb(msg);
+        }
+        public void deleteConversation(string partnerUsername)
+        {
+            Server.serverDatabase.DeleteConversation(this.username, partnerUsername);
         }
     }
 }

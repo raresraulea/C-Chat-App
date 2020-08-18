@@ -15,9 +15,10 @@ namespace Server
             User newUser = new User("Ultimul", "parolaUltimul");
             //DB.AddUser(newUser);
             server.connectToDatabase(DB);
-            newUser.sendMessage("Hello World!", Server.serverDatabase.GetUserById(1));
-
-            //newUser.Login("1234acasa", newUser.password);
+            //newUser.sendMessage("Am ajuns", Server.serverDatabase.GetUserById(1));
+            //newUser.deleteMessage("Voi fi stersa");
+            //newUser.deleteConversation(Server.serverDatabase.GetUserById(1).username);
+            newUser.Login();
             server.run();
             
         }

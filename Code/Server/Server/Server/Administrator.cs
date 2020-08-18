@@ -6,5 +6,9 @@ namespace Server
 {
     class Administrator:User
     {
+        public void blockUser() { }
+        public void warnUser() { }
+        public void deleteUserAccount() { }
+
     }
 }

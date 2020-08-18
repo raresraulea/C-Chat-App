@@ -10,6 +10,7 @@ namespace Server
         private string username;
         private string password;
         private static Login instance = null;
+        public List<User> onlineUsers = new List<User>();
 
         private Login()
         {
@@ -24,23 +25,21 @@ namespace Server
             }
         }
 
-
-
-
-
-        public void editUsername(string username)
+        public void verifyLoginData(User user)
         {
-
-        }
-        public void editPassword(string newPassword)
-        {
-
+            if (Server.serverDatabase.checkCredentials(user.username, user.password))
+            {
+                LoginToServer(user);
+            }
+            else
+                Console.WriteLine("Try Again!");
         }
 
-        public void verifyLoginData(string username, string password)
+        private void LoginToServer(User user)
         {
-            Server.serverDatabase.checkCredentials(username, password);
+            Console.WriteLine(user.username + "logged in to server!");
         }
+
         public void verifyPassword(string password)
         {
 

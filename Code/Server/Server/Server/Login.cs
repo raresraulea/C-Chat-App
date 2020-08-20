@@ -23,15 +23,17 @@ namespace Server
             }
         }
 
-        public void verifyLoginData(User user)
+        public string verifyLoginData(User user)
         {
             if (Server_class.serverDatabase.checkCredentials(user.username, user.password))
             {
-                updateOnlineUsers(user);
+                //updateOnlineUsers(user);
+                return "Logged In!";
             }
             else
             {
-                Server_class.sendClientInvLoginMsg();
+                //Server_class.sendClientInvLoginMsg();
+                return "Wrong Credentials!";
             }
         }
 

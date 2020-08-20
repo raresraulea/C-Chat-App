@@ -38,25 +38,35 @@ namespace Client_App
                 if (hostAddress == "this" || hostAddress == "localhost")
                     connection.client = new TcpClient(Dns.GetHostName(), int.Parse(this.PortTB.Text));
                 connection.networkStream = connection.client.GetStream();
-                BinaryFormatter formatter = new BinaryFormatter();
 
+                ConnectionLabel.Text = "Wait...";
+                BinaryFormatter formatter = new BinaryFormatter();
                 ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
-                messageToSend.MessageText = this.messageBox.Text;
-                messageToSend.Sender = "TrimitatorDeMesaje";
-                messageToSend.Receiver = "PrimitorDeMesaje";
+                messageToSend.MessageText = "Connection Request";
                 messageToSend.Type = "Connection";
                 formatter.Serialize(connection.networkStream, messageToSend);
-                this.messageBox.Text = "";
 
                 StreamReader streamReader = new StreamReader(connection.networkStream);
                 string responseFromServer = streamReader.ReadLine();
                 this.ConnectionLabel.Text = responseFromServer;
+
+                this.label7.Text = "Now You can Log In!";
                 this.ConnectionLabel.ForeColor = Color.Green;
                 this.DisconnectBtn.Enabled = true;
                 this.ConnectBtn.Enabled = false;
-                ConnectBtn.BackColor = Color.FromArgb(20, 255, 0, 0);
-                DisconnectBtn.BackColor = Color.LightSalmon;
+                this.LoginBtn.Enabled = true;
+                this.LoginBtn.BackColor = Color.MediumSeaGreen;
+                this.SignUpBtn.Enabled = true;
+                this.SignUpBtn.BackColor = Color.RoyalBlue;
+                this.UsernameTB.Enabled = true;
+                this.PasswordTB.Enabled = true;
+                //this.LogoutBtn.Enabled = true;
+                //this.LogoutBtn.BackColor = Color.LightSalmon;
+                this.ConnectBtn.BackColor = Color.FromArgb(20, 255, 0, 0);
+                this.DisconnectBtn.BackColor = Color.LightSalmon;
+                connection.networkStream.Flush();
                 connection.networkStream.Close();
+                connection.client.Close();
 
             }
             catch (Exception exc)
@@ -67,15 +77,19 @@ namespace Client_App
         }
         private void DisconnectBtn_Click(object sender, EventArgs e)
         {
+            this.LoginBtn.Enabled = false;
+            LoginBtn.BackColor = Color.LightGray;
+            this.SignUpBtn.Enabled = false;
+            this.SignUpBtn.BackColor = Color.LightGray;
             this.ConnectionLabel.Text = "Not Connected";
             this.ConnectionLabel.ForeColor = Color.Red;
             this.DisconnectBtn.Enabled = false;
             this.ConnectBtn.Enabled = true;
+            this.label7.Text = "Bye Bye!";
             DisconnectBtn.BackColor = Color.FromArgb(20, 255, 0, 0);
             ConnectBtn.BackColor = Color.MediumSeaGreen;
-            connection.client.Close();
         }
-        
+
         private void button1_Click(object sender, EventArgs e)
         {
             try
@@ -152,5 +166,36 @@ namespace Client_App
 
         }
 
+        private void LoginBtn_Click(object sender, EventArgs e)
+        {
+            connection = new connectionToServer();
+            string hostAddress = this.IPAddressTB.Text;
+            if (hostAddress == "this" || hostAddress == "localhost")
+                connection.client = new TcpClient(Dns.GetHostName(), int.Parse(this.PortTB.Text));
+            connection.networkStream = connection.client.GetStream();
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
+            messageToSend.MessageText = "Login Request";
+            messageToSend.Type = "Login";
+            messageToSend.username = UsernameTB.Text.ToString();
+            messageToSend.password = PasswordTB.Text.ToString();
+            
+            formatter.Serialize(connection.networkStream, messageToSend);
+            //this.messageBox.Text = "";
+
+            StreamReader streamReader = new StreamReader(connection.networkStream);
+            string responseFromServer = streamReader.ReadLine();
+            this.label7.Text = responseFromServer;
+            if(responseFromServer == "Logged In!")
+            {
+                this.messageBox.Enabled = true;
+                this.messageBox.BackColor = Color.White;
+                this.sendMessageButton.Enabled = true;
+                this.sendMessageButton.BackColor = Color.LightBlue;
+            }
+            connection.networkStream.Close();
+            connection.client.Close();
+        }
     }
 }

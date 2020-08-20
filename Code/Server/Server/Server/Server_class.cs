@@ -42,6 +42,9 @@ namespace Server
                     ChatAppClasses.Message messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(networkStream);
                     //Message messageFromClient = new Message();
                     //messageFromClient.setText(Encoding.UTF8.GetString(buffer));
+                    if(messageFromClient.Type == "Login")
+                        Console.WriteLine(messageFromClient.username + " " + messageFromClient.password);
+                    
                     string  response = handleIncomingMessage(messageFromClient);
                     
                     networkStream.Write(Encoding.ASCII.GetBytes(response));
@@ -67,10 +70,10 @@ namespace Server
             Console.WriteLine("Client accepted...");
             return client;
         }
-        public static void handleLogin(User user)
+        public static string handleLogin(User user)
         {
             Login login = Login.Instance;
-            login.verifyLoginData(user);
+            return login.verifyLoginData(user);
         }
 
         public static void sendChatHistoryToClient()
@@ -110,6 +113,9 @@ namespace Server
         public string handleIncomingMessage(ChatAppClasses.Message messageFromClient)
         {
             Console.WriteLine("The message from the client is: " + messageFromClient.MessageText);
+            //if (messageFromClient.Type == "Login" && serverDatabase.checkCredentials(messageFromClient.username, messageFromClient.password))
+            //    return "Logged In!";
+
             switch (messageFromClient.Type)
             {
                 case "Connection":
@@ -118,9 +124,13 @@ namespace Server
                 case "Message":
                     return "Message handled!";
                     break;
+                case "Login":
+                    return handleLogin(new User() { username = messageFromClient.username, password = messageFromClient.password });
+                    break;
             }
             Server_class.serverDatabase.saveMessageToDb(messageFromClient);
             return "No Case";
+
         }
         public void sendPrivateMessage()
         {

@@ -40,8 +40,6 @@
             this.ConnectBtn = new System.Windows.Forms.Button();
             this.IPAddressTB = new System.Windows.Forms.TextBox();
             this.PortTB = new System.Windows.Forms.TextBox();
-            this.PasswordTB = new System.Windows.Forms.TextBox();
-            this.UsernameTB = new System.Windows.Forms.TextBox();
             this.LoginBtn = new System.Windows.Forms.Button();
             this.SignUpBtn = new System.Windows.Forms.Button();
             this.PasswordLabel = new System.Windows.Forms.Label();
@@ -60,10 +58,14 @@
             this.MessagesListView = new System.Windows.Forms.ListView();
             this.Sender = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Message = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.UsernameTB = new System.Windows.Forms.TextBox();
+            this.PasswordTB = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // messageBox
             // 
+            this.messageBox.BackColor = System.Drawing.SystemColors.InactiveCaption;
+            this.messageBox.Enabled = false;
             this.messageBox.ForeColor = System.Drawing.SystemColors.InactiveCaption;
             this.messageBox.Location = new System.Drawing.Point(22, 629);
             this.messageBox.Name = "messageBox";
@@ -74,12 +76,14 @@
             // 
             // sendMessageButton
             // 
+            this.sendMessageButton.BackColor = System.Drawing.SystemColors.InactiveCaption;
+            this.sendMessageButton.Enabled = false;
             this.sendMessageButton.Location = new System.Drawing.Point(423, 629);
             this.sendMessageButton.Name = "sendMessageButton";
             this.sendMessageButton.Size = new System.Drawing.Size(75, 23);
             this.sendMessageButton.TabIndex = 1;
             this.sendMessageButton.Text = "Send";
-            this.sendMessageButton.UseVisualStyleBackColor = true;
+            this.sendMessageButton.UseVisualStyleBackColor = false;
             this.sendMessageButton.Click += new System.EventHandler(this.button1_Click);
             // 
             // ServerIPLabel
@@ -152,31 +156,10 @@
             this.PortTB.TabIndex = 8;
             this.PortTB.Text = "Port...";
             // 
-            // PasswordTB
-            // 
-            this.PasswordTB.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PasswordTB.ForeColor = System.Drawing.SystemColors.InactiveCaption;
-            this.PasswordTB.Location = new System.Drawing.Point(135, 179);
-            this.PasswordTB.Margin = new System.Windows.Forms.Padding(5);
-            this.PasswordTB.Name = "PasswordTB";
-            this.PasswordTB.Size = new System.Drawing.Size(262, 23);
-            this.PasswordTB.TabIndex = 14;
-            this.PasswordTB.Text = "Password...";
-            // 
-            // UsernameTB
-            // 
-            this.UsernameTB.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.UsernameTB.ForeColor = System.Drawing.SystemColors.InactiveCaption;
-            this.UsernameTB.Location = new System.Drawing.Point(135, 135);
-            this.UsernameTB.Margin = new System.Windows.Forms.Padding(5);
-            this.UsernameTB.Name = "UsernameTB";
-            this.UsernameTB.Size = new System.Drawing.Size(262, 23);
-            this.UsernameTB.TabIndex = 13;
-            this.UsernameTB.Text = "Username..";
-            // 
             // LoginBtn
             // 
-            this.LoginBtn.BackColor = System.Drawing.Color.MediumSeaGreen;
+            this.LoginBtn.BackColor = System.Drawing.SystemColors.InactiveCaption;
+            this.LoginBtn.Enabled = false;
             this.LoginBtn.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LoginBtn.ForeColor = System.Drawing.SystemColors.HighlightText;
             this.LoginBtn.Location = new System.Drawing.Point(429, 141);
@@ -185,10 +168,12 @@
             this.LoginBtn.TabIndex = 12;
             this.LoginBtn.Text = "Login";
             this.LoginBtn.UseVisualStyleBackColor = false;
+            this.LoginBtn.Click += new System.EventHandler(this.LoginBtn_Click);
             // 
             // SignUpBtn
             // 
-            this.SignUpBtn.BackColor = System.Drawing.Color.RoyalBlue;
+            this.SignUpBtn.BackColor = System.Drawing.SystemColors.InactiveCaption;
+            this.SignUpBtn.Enabled = false;
             this.SignUpBtn.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SignUpBtn.ForeColor = System.Drawing.SystemColors.InactiveBorder;
             this.SignUpBtn.Location = new System.Drawing.Point(630, 141);
@@ -220,7 +205,8 @@
             // 
             // LogoutBtn
             // 
-            this.LogoutBtn.BackColor = System.Drawing.Color.LightSalmon;
+            this.LogoutBtn.BackColor = System.Drawing.SystemColors.InactiveCaption;
+            this.LogoutBtn.Enabled = false;
             this.LogoutBtn.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LogoutBtn.ForeColor = System.Drawing.SystemColors.HighlightText;
             this.LogoutBtn.Location = new System.Drawing.Point(832, 141);
@@ -232,6 +218,7 @@
             // 
             // AdminBoardUsernameTB
             // 
+            this.AdminBoardUsernameTB.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.AdminBoardUsernameTB.Enabled = false;
             this.AdminBoardUsernameTB.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AdminBoardUsernameTB.ForeColor = System.Drawing.SystemColors.InactiveCaption;
@@ -245,7 +232,7 @@
             // 
             // BlockBtn
             // 
-            this.BlockBtn.BackColor = System.Drawing.Color.Tomato;
+            this.BlockBtn.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.BlockBtn.Enabled = false;
             this.BlockBtn.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BlockBtn.ForeColor = System.Drawing.SystemColors.HighlightText;
@@ -259,7 +246,7 @@
             // 
             // WarnBtn
             // 
-            this.WarnBtn.BackColor = System.Drawing.Color.SandyBrown;
+            this.WarnBtn.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.WarnBtn.Enabled = false;
             this.WarnBtn.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.WarnBtn.ForeColor = System.Drawing.SystemColors.HighlightText;
@@ -285,7 +272,7 @@
             // 
             // DeleteAccBtn
             // 
-            this.DeleteAccBtn.BackColor = System.Drawing.Color.OrangeRed;
+            this.DeleteAccBtn.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.DeleteAccBtn.Enabled = false;
             this.DeleteAccBtn.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.DeleteAccBtn.ForeColor = System.Drawing.SystemColors.HighlightText;
@@ -365,12 +352,28 @@
             this.MessagesListView.UseCompatibleStateImageBehavior = false;
             this.MessagesListView.View = System.Windows.Forms.View.List;
             // 
+            // UsernameTB
+            // 
+            this.UsernameTB.Location = new System.Drawing.Point(136, 136);
+            this.UsernameTB.Name = "UsernameTB";
+            this.UsernameTB.Size = new System.Drawing.Size(262, 22);
+            this.UsernameTB.TabIndex = 27;
+            // 
+            // PasswordTB
+            // 
+            this.PasswordTB.Location = new System.Drawing.Point(136, 180);
+            this.PasswordTB.Name = "PasswordTB";
+            this.PasswordTB.Size = new System.Drawing.Size(261, 22);
+            this.PasswordTB.TabIndex = 28;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Lavender;
             this.ClientSize = new System.Drawing.Size(1004, 693);
+            this.Controls.Add(this.PasswordTB);
+            this.Controls.Add(this.UsernameTB);
             this.Controls.Add(this.MessagesListView);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.ConnectionLabel);
@@ -383,8 +386,6 @@
             this.Controls.Add(this.WarnBtn);
             this.Controls.Add(this.AdminBoardLabel);
             this.Controls.Add(this.LogoutBtn);
-            this.Controls.Add(this.PasswordTB);
-            this.Controls.Add(this.UsernameTB);
             this.Controls.Add(this.LoginBtn);
             this.Controls.Add(this.SignUpBtn);
             this.Controls.Add(this.PasswordLabel);
@@ -414,8 +415,6 @@
         private System.Windows.Forms.Button ConnectBtn;
         private System.Windows.Forms.TextBox IPAddressTB;
         private System.Windows.Forms.TextBox PortTB;
-        private System.Windows.Forms.TextBox PasswordTB;
-        private System.Windows.Forms.TextBox UsernameTB;
         private System.Windows.Forms.Button LoginBtn;
         private System.Windows.Forms.Button SignUpBtn;
         private System.Windows.Forms.Label PasswordLabel;
@@ -434,6 +433,8 @@
         private System.Windows.Forms.ListView MessagesListView;
         private System.Windows.Forms.ColumnHeader Sender;
         private System.Windows.Forms.ColumnHeader Message;
+        private System.Windows.Forms.TextBox UsernameTB;
+        private System.Windows.Forms.TextBox PasswordTB;
     }
 }
 

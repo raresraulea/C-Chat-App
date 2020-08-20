@@ -38,26 +38,27 @@ namespace Server
 
             return numberOfRowsAffected;
         }
-
-        public bool usernameAvailable(string username)
+        public DataTable ExecuteRead(string query, Dictionary<string, object> args)
         {
-            var query = "SELECT * FROM USERS WHERE Username = @Username";
+            if (string.IsNullOrEmpty(query.Trim()))
+                return null;
 
-            var args = new Dictionary<string, object>
+            using (var cmd = new SQLiteCommand(query, myConnection))
             {
-                {"@Username", username}
-            };
+                foreach (KeyValuePair<string, object> entry in args)
+                {
+                    cmd.Parameters.AddWithValue(entry.Key, entry.Value);
+                }
 
-            DataTable dt = ExecuteRead(query, args);
+                var da = new SQLiteDataAdapter(cmd);
 
-            if (dt == null || dt.Rows.Count == 0)
-            {
-                return true;
+                var dt = new DataTable();
+                da.Fill(dt);
+
+                da.Dispose();
+                return dt;
             }
-
-            return false;
         }
-
         public int AddUser(User user)
         {
             const string query = "INSERT INTO USERS(Username, Password) VALUES(@Username, @Password)";
@@ -70,7 +71,17 @@ namespace Server
 
             return ExecuteWrite(query, args);
         }
+        public int DeleteUser(User user)
+        {
+            const string query = "Delete from USERS WHERE Username = @Username";
 
+            var args = new Dictionary<string, object>
+            {
+                {"@Username", user.username}
+            };
+
+            return ExecuteWrite(query, args);
+        }
         public int EditPassword(User user, string newPassword)
         {
             const string query = "UPDATE USERS SET PAssword = @Password WHERE Username = @Username";
@@ -83,41 +94,6 @@ namespace Server
 
             return ExecuteWrite(query, args);
         }
-
-        public int DeleteUser(User user)
-        {
-            const string query = "Delete from USERS WHERE Username = @Username";
-
-            var args = new Dictionary<string, object>
-            {
-                {"@Username", user.username}
-            };
-
-            return ExecuteWrite(query, args);
-        }
-
-        public DataTable ExecuteRead(string query, Dictionary<string, object> args)
-        {
-            if (string.IsNullOrEmpty(query.Trim()))
-                return null;
-
-                using (var cmd = new SQLiteCommand(query, myConnection))
-                {
-                    foreach (KeyValuePair<string, object> entry in args)
-                    {
-                        cmd.Parameters.AddWithValue(entry.Key, entry.Value);
-                    }
-
-                    var da = new SQLiteDataAdapter(cmd);
-
-                    var dt = new DataTable();
-                    da.Fill(dt);
-
-                    da.Dispose();
-                    return dt;
-                }
-        }
-
         public User GetUserById(int ID)
         {
             var query = "SELECT * FROM USERS WHERE ID = @ID";
@@ -141,6 +117,24 @@ namespace Server
             };
 
             return user;
+        }
+        public bool usernameAvailable(string username)
+        {
+            var query = "SELECT * FROM USERS WHERE Username = @Username";
+
+            var args = new Dictionary<string, object>
+            {
+                {"@Username", username}
+            };
+
+            DataTable dt = ExecuteRead(query, args);
+
+            if (dt == null || dt.Rows.Count == 0)
+            {
+                return true;
+            }
+
+            return false;
         }
         public bool checkCredentials(string username, string password)
         {
@@ -212,7 +206,7 @@ namespace Server
             DataTable dt = ExecuteRead(query, args);
             if (dt == null || dt.Rows.Count == 0)
             {
-               
+
             }
             messageList = (from DataRow dr in dt.Rows
                            select new Message()
@@ -223,5 +217,33 @@ namespace Server
 
             return messageList;
         }
+
+        public int BlockUser(User user)
+        {
+            const string query = "UPDATE USERS SET Active = @Active WHERE Username = @Username AND Password = @Password";
+
+            var args = new Dictionary<string, object>
+            {
+                {"@Username", user.username},
+                {"@Password", user.password},
+                {"@Active", "No"}
+            };
+
+            return ExecuteWrite(query, args);
+        }
+        public int UnblockUser(User user)
+        {
+            const string query = "UPDATE USERS SET Active = @Active WHERE Username = @Username AND Password = @Password";
+
+            var args = new Dictionary<string, object>
+            {
+                {"@Username", user.username},
+                {"@Password", user.password},
+                {"@Active", "Yes"}
+            };
+
+            return ExecuteWrite(query, args);
+        }
     }
 }
+

@@ -1,4 +1,6 @@
+0. MultiThreading - branching in git
 1. Notificari
 2. Forgot Password 
 3. warnUser complicat
 4. editare mesaj in tot sistemul in max 15 min de la trimitere
+

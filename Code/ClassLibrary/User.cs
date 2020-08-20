@@ -8,7 +8,7 @@ namespace Server
     public class User
     {
         public int ID;
-        public int IP;
+        public string IP;
         public string username;
         public string password;
         public string accessLevel;
@@ -32,6 +32,9 @@ namespace Server
         {
             Message msg = new Message(messageText, destinationUser.username);
             msg.Sender = this.username;
+
+            //de trimis mesajul catre client
+
             Server.serverDatabase.saveMessageToDb(msg);
             
         }

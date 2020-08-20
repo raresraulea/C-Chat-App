@@ -16,7 +16,7 @@ namespace Client
 				TcpClient client = new TcpClient(Dns.GetHostName(), 1302);
 				string messageToSend = "This is my message";
 
-				int byteCount = Encoding.ASCII.GetByteCount(messageToSend + 1);
+				int byteCount = Encoding.ASCII.GetByteCount(messageToSend);
 				byte[] sendData = new byte[byteCount + 1];
 				sendData = Encoding.ASCII.GetBytes(messageToSend);
 

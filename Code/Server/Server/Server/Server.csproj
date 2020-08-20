@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,7 +6,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ChatAppClasses" Version="1.0.0" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.113.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Client App\ChatAppClasses\ChatAppClasses.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ChatAppClasses">
+      <HintPath>..\..\..\..\..\..\NuGet Packages\new ngpckg\netstandard2.0\ChatAppClasses.dll</HintPath>
+    </Reference>
+    <Reference Include="Class Library">
+      <HintPath>..\..\..\..\..\..\NuGet Packages\netstandard2.0\Class Library.dll</HintPath>
+    </Reference>
+    <Reference Include="Client App">
+      <HintPath>..\..\..\Client App\Client App\bin\Debug\Client App.exe</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

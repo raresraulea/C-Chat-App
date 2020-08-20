@@ -2,7 +2,6 @@
 using System.Text;
 using System.IO;
 using System.Net.Sockets;
-using ChatAppClasses;
 
 namespace Server
 {
@@ -10,8 +9,7 @@ namespace Server
     {
         static void Main(string[] args)
         {
-            
-            Server_class server = new Server_class();
+            Server server = new Server();
             Database DB = new Database();
             User newUser = new User("Ultimul", "parolaUltimul");
             User newUser1 = new User("Ultimul", "parolaUltimul");

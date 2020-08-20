@@ -341,6 +341,19 @@
             "rid": "win"
           }
         }
+      },
+      "ChatAppClasses/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "System.Data.SQLite": "1.0.113.1"
+        },
+        "compile": {
+          "bin/placeholder/ChatAppClasses.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/ChatAppClasses.dll": {}
+        }
       }
     }
   },
@@ -1175,10 +1188,16 @@
         "useSharedDesignerContext.txt",
         "version.txt"
       ]
+    },
+    "ChatAppClasses/1.0.0": {
+      "type": "project",
+      "path": "../../../Client App/ChatAppClasses/ChatAppClasses.csproj",
+      "msbuildProject": "../../../Client App/ChatAppClasses/ChatAppClasses.csproj"
     }
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
+      "ChatAppClasses >= 1.0.0",
       "System.Data.SQLite >= 1.0.113.1"
     ]
   },
@@ -1203,11 +1222,16 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Users\\raresraulea1\\Desktop\\NuGet Packages": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "netcoreapp3.1": {
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\raresraulea1\\Desktop\\C# Chat App NTT\\C-Chat-App\\Code\\Client App\\ChatAppClasses\\ChatAppClasses.csproj": {
+              "projectPath": "C:\\Users\\raresraulea1\\Desktop\\C# Chat App NTT\\C-Chat-App\\Code\\Client App\\ChatAppClasses\\ChatAppClasses.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -1219,6 +1243,10 @@
     "frameworks": {
       "netcoreapp3.1": {
         "dependencies": {
+          "ChatAppClasses": {
+            "target": "Package",
+            "version": "[1.0.0, )"
+          },
           "System.Data.SQLite": {
             "target": "Package",
             "version": "[1.0.113.1, )"

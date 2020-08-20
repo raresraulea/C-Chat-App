@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Server\Server\Server\Administrator.cs" Link="Administrator.cs" />
+    <Compile Include="..\Server\Server\Server\Database.cs" Link="Database.cs" />
+    <Compile Include="..\Server\Server\Server\Login.cs" Link="Login.cs" />
+    <Compile Include="..\Server\Server\Server\Message.cs" Link="Message.cs" />
+    <Compile Include="..\Server\Server\Server\Server.cs" Link="Server.cs" />
+    <Compile Include="..\Server\Server\Server\SignUp.cs" Link="SignUp.cs" />
+    <Compile Include="..\Server\Server\Server\User.cs" Link="User.cs" />
+  </ItemGroup>
+
+</Project>

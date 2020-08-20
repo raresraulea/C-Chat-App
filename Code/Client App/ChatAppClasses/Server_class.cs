@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
-namespace Server
+namespace ChatAppClasses
 {
-    class Server
+    public class Server_class
     {
         public static Database serverDatabase;
         public static List<User> onlineUsers = new List<User>();
@@ -21,6 +23,7 @@ namespace Server
             TcpListener listener = new TcpListener(System.Net.IPAddress.Any, 1302);
             listener.Start();
             Console.WriteLine("Server started...");
+            onlineUsers.Clear();
             while (true)
             {
                 Console.WriteLine("Waiting for connection...");
@@ -29,17 +32,18 @@ namespace Server
                 NetworkStream networkStream = client.GetStream();
                 StreamReader streamReader = new StreamReader(client.GetStream());
                 StreamWriter streamWriter = new StreamWriter(client.GetStream());
+                IFormatter formatter = new BinaryFormatter();
 
                 try
                 {
                     byte[] buffer = new byte[1024];
-                    networkStream.Read(buffer);
-
-                    Message messageFromClient = new Message();
-                    messageFromClient.setText(Encoding.UTF8.GetString(buffer));
-                    networkStream.Write(Encoding.ASCII.GetBytes("Server received your request"));
+                    //networkStream.Read(buffer);
+                    Message messageFromClient = (Message)formatter.Deserialize(networkStream);
+                    //Message messageFromClient = new Message();
+                    //messageFromClient.setText(Encoding.UTF8.GetString(buffer));
+                    //networkStream.Write(Encoding.ASCII.GetBytes("Server received your request"));
                     handleIncomingMessage(messageFromClient);
-                    
+
                     Console.WriteLine();
 
                     streamWriter.Flush();
@@ -48,9 +52,14 @@ namespace Server
                 catch (Exception e)
                 {
 
-                    Console.WriteLine("Failed to start...");
+                    Console.WriteLine("Failed to start..." + e.Message);
                 }
             }
+        }
+
+        internal static void sendClientInvLoginMsg()
+        {
+            throw new NotImplementedException();
         }
 
         private static TcpClient acceptConnectionToClient(TcpListener listener)
@@ -64,26 +73,21 @@ namespace Server
             Login login = Login.Instance;
             login.verifyLoginData(user);
         }
-        public static void getChatHistoryFromDB()
-        {
 
-        }
         public static void sendChatHistoryToClient()
         {
 
         }
-        public void newSignUp()
+        public void handleSignUp(User user)
         {
+            SignUp signUp = SignUp.Instance;
+            string signUpresponse = SignUp.signUp(user);
+
+            //de trimis catre client SignUpResponse
+
 
         }
-        public static void createUserInDB()
-        {
 
-        }
-        public static void deleteUserFromDB()
-        {
-
-        }
         public static void sendDeleteConfirmationToClient()
         {
 
@@ -106,7 +110,8 @@ namespace Server
         }
         public void handleIncomingMessage(Message messageFromClient)
         {
-            Console.WriteLine("The message from the client is: " + messageFromClient);
+            Console.WriteLine("The message from the client is: " + messageFromClient.MessageText);
+            Server_class.serverDatabase.saveMessageToDb(messageFromClient);
         }
         public void sendPrivateMessage()
         {

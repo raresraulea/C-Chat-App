@@ -27,12 +27,11 @@ namespace Server
         {
             if (Server.serverDatabase.checkCredentials(user.username, user.password))
             {
-                LoginToServer(user);
+                updateOnlineUsers(user);
             }
             else
             {
-                SignUp(user);
-                LoginToServer(user);
+                Server.sendClientInvLoginMsg();
             }
         }
 
@@ -46,7 +45,7 @@ namespace Server
             else Console.WriteLine("Username already taken!");
         }
 
-        private void LoginToServer(User user)
+        private void updateOnlineUsers(User user)
         {
             Console.WriteLine(user.username + " logged in to server!");
             if (Server.onlineUsers.Where(x => x.username == user.username).Count() < 1)

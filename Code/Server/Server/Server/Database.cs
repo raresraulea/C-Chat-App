@@ -6,7 +6,7 @@ using System.IO;
 using System.Data;
 using System.Linq;
 
-namespace ChatAppClasses
+namespace Server
 {
     public class Database
     {

@@ -22,9 +22,7 @@ namespace Client_App
         public Form1()
         {
             InitializeComponent();
-			ChatAppClasses.User clientUser = new ChatAppClasses.User();
 			IPAddress hostIP = Dns.GetHostEntry(Dns.GetHostName()).AddressList[0];
-			clientUser.IP = hostIP.ToString();
 		}
 	
 		private void button1_Click(object sender, EventArgs e)
@@ -40,6 +38,7 @@ namespace Client_App
 				messageToSend.Sender = "TrimitatorDeMesaje";
 				messageToSend.Receiver = "PrimitorDeMesaje";
 				formatter.Serialize(networkStream, messageToSend);
+				this.messageBox.Text = "";
 
 				//int byteCount = Encoding.ASCII.GetByteCount(messageToSend);
 				//byte[] sendData = new byte[byteCount + 1];

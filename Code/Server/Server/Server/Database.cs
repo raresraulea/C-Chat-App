@@ -39,6 +39,9 @@ namespace Server
 
             return numberOfRowsAffected;
         }
+
+
+
         public DataTable ExecuteRead(string query, Dictionary<string, object> args)
         {
             if (string.IsNullOrEmpty(query.Trim()))
@@ -62,11 +65,27 @@ namespace Server
         }
         public int AddUser(User user)
         {
-            const string query = "INSERT INTO USERS(Username, Password) VALUES(@Username, @Password)";
+            const string query = "INSERT INTO USERS(Username, Password,AccessLevel) VALUES(@Username, @Password, @AccessLevel)";
+
+            if (user.accessLevel != "User")
+                user.accessLevel = "User";
+            var args = new Dictionary<string, object>
+            {
+                 {"@Username", user.username},
+                 {"@AccessLevel", user.accessLevel},
+                 {"@Password", user.password}
+            };
+
+            return ExecuteWrite(query, args);
+        }
+        public int AddAdministrator(User user)
+        {
+            const string query = "INSERT INTO USERS(Username, Password, AccessLevel) VALUES(@Username, @Password, @AccessLevel)";
 
             var args = new Dictionary<string, object>
             {
                  {"@Username", user.username},
+                 {"@AccessLevel", "Admin"},
                  {"@Password", user.password}
             };
 
@@ -156,6 +175,27 @@ namespace Server
 
             return true;
         }
+        internal bool verifyAdmin(string username, string password)
+        {
+            var query = "SELECT * FROM USERS WHERE Username = @Username AND Password = @Password AND AccessLevel = @AccessLevel";
+
+            var args = new Dictionary<string, object>
+            {
+                {"@Username", username},
+                {"@AccessLevel", "Admin"},
+                {"@Password", password}
+            };
+
+            DataTable dt = ExecuteRead(query, args);
+
+            if (dt == null || dt.Rows.Count == 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+           
         public int saveMessageToDb(ChatAppClasses.Message message)
         {
             const string query = "INSERT INTO MESSAGES(Message, Sender, Receiver) VALUES(@Message, @Sender, @Receiver)";

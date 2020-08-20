@@ -27,7 +27,8 @@ namespace Server
         {
             if (Server_class.serverDatabase.checkCredentials(user.username, user.password))
             {
-                //updateOnlineUsers(user);
+                if (Server_class.serverDatabase.verifyAdmin(user.username, user.password))
+                    return "Welcome, Admin!";
                 return "Logged In!";
             }
             else

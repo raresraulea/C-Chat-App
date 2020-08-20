@@ -80,10 +80,10 @@ namespace Server
         {
 
         }
-        public void handleSignUp(User user)
+        public string handleSignUp(User user)
         {
             SignUp signUp = SignUp.Instance;
-            string signUpresponse = SignUp.signUp(user);
+            return SignUp.signUp(user);
 
             //de trimis catre client SignUpResponse
 
@@ -126,6 +126,9 @@ namespace Server
                     break;
                 case "Login":
                     return handleLogin(new User() { username = messageFromClient.username, password = messageFromClient.password });
+                    break;
+                case "SignUp":
+                    return handleSignUp(new User() { username = messageFromClient.username, password = messageFromClient.password });
                     break;
             }
             Server_class.serverDatabase.saveMessageToDb(messageFromClient);

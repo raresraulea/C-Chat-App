@@ -14,7 +14,6 @@ namespace Server
             Server_class server = new Server_class();
             Database DB = new Database();
             server.connectToDatabase(DB);
-            //Console.WriteLine(DB.checkCredentials("Mihai", "parolaNoua"));
             server.run();
             
         }

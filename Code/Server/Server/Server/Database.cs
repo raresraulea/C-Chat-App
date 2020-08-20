@@ -5,6 +5,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Data;
 using System.Linq;
+using ChatAppClasses;
 
 namespace Server
 {
@@ -155,7 +156,7 @@ namespace Server
 
             return true;
         }
-        public int saveMessageToDb(Message message)
+        public int saveMessageToDb(ChatAppClasses.Message message)
         {
             const string query = "INSERT INTO MESSAGES(Message, Sender, Receiver) VALUES(@Message, @Sender, @Receiver)";
 

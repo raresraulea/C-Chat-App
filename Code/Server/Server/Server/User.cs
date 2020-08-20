@@ -30,7 +30,7 @@ namespace Server
         }
         public void sendMessage(string messageText, User destinationUser)
         {
-            Message msg = new Message(messageText, destinationUser.username);
+            ChatAppClasses.Message msg = new ChatAppClasses.Message(messageText, destinationUser.username);
             msg.Sender = this.username;
 
             //de trimis mesajul catre client

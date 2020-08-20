@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using ChatAppClasses;
 
 namespace Server
 {
@@ -38,14 +39,12 @@ namespace Server
                 {
                     byte[] buffer = new byte[1024];
                     //networkStream.Read(buffer);
-                    Message messageFromClient = (Message)formatter.Deserialize(networkStream);
+                    ChatAppClasses.Message messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(networkStream);
                     //Message messageFromClient = new Message();
                     //messageFromClient.setText(Encoding.UTF8.GetString(buffer));
-                    //networkStream.Write(Encoding.ASCII.GetBytes("Server received your request"));
-                    handleIncomingMessage(messageFromClient);
-
-                    Console.WriteLine();
-
+                    string  response = handleIncomingMessage(messageFromClient);
+                    
+                    networkStream.Write(Encoding.ASCII.GetBytes(response));
                     streamWriter.Flush();
                     streamWriter.Close();
                 }
@@ -108,10 +107,20 @@ namespace Server
         {
 
         }
-        public void handleIncomingMessage(Message messageFromClient)
+        public string handleIncomingMessage(ChatAppClasses.Message messageFromClient)
         {
             Console.WriteLine("The message from the client is: " + messageFromClient.MessageText);
+            switch (messageFromClient.Type)
+            {
+                case "Connection":
+                    return "Connected";
+                    break;
+                case "Message":
+                    return "Message handled!";
+                    break;
+            }
             Server_class.serverDatabase.saveMessageToDb(messageFromClient);
+            return "No Case";
         }
         public void sendPrivateMessage()
         {
@@ -121,7 +130,7 @@ namespace Server
         {
 
         }
-        public static void saveMessageToDB(Message message)
+        public static void saveMessageToDB(ChatAppClasses.Message message)
         {
             serverDatabase.saveMessageToDb(message);
         }

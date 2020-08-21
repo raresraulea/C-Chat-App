@@ -33,7 +33,6 @@
             this.sendMessageButton = new System.Windows.Forms.Button();
             this.ServerIPLabel = new System.Windows.Forms.Label();
             this.PortLabel = new System.Windows.Forms.Label();
-            this.DisconnectBtn = new System.Windows.Forms.Button();
             this.ConnectBtn = new System.Windows.Forms.Button();
             this.IPAddressTB = new System.Windows.Forms.TextBox();
             this.PortTB = new System.Windows.Forms.TextBox();
@@ -41,7 +40,6 @@
             this.SignUpBtn = new System.Windows.Forms.Button();
             this.PasswordLabel = new System.Windows.Forms.Label();
             this.UsernameLabel = new System.Windows.Forms.Label();
-            this.LogoutBtn = new System.Windows.Forms.Button();
             this.AdminBoardUsernameTB = new System.Windows.Forms.TextBox();
             this.BlockBtn = new System.Windows.Forms.Button();
             this.WarnBtn = new System.Windows.Forms.Button();
@@ -103,20 +101,6 @@
             this.PortLabel.Size = new System.Drawing.Size(41, 17);
             this.PortLabel.TabIndex = 3;
             this.PortLabel.Text = "Port";
-            // 
-            // DisconnectBtn
-            // 
-            this.DisconnectBtn.BackColor = System.Drawing.Color.LightGray;
-            this.DisconnectBtn.Enabled = false;
-            this.DisconnectBtn.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.DisconnectBtn.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.DisconnectBtn.Location = new System.Drawing.Point(630, 29);
-            this.DisconnectBtn.Name = "DisconnectBtn";
-            this.DisconnectBtn.Size = new System.Drawing.Size(128, 50);
-            this.DisconnectBtn.TabIndex = 4;
-            this.DisconnectBtn.Text = "Disconnect";
-            this.DisconnectBtn.UseVisualStyleBackColor = false;
-            this.DisconnectBtn.Click += new System.EventHandler(this.DisconnectBtn_Click);
             // 
             // ConnectBtn
             // 
@@ -198,20 +182,6 @@
             this.UsernameLabel.Size = new System.Drawing.Size(85, 17);
             this.UsernameLabel.TabIndex = 9;
             this.UsernameLabel.Text = "Username";
-            // 
-            // LogoutBtn
-            // 
-            this.LogoutBtn.BackColor = System.Drawing.Color.LightGray;
-            this.LogoutBtn.Enabled = false;
-            this.LogoutBtn.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LogoutBtn.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.LogoutBtn.Location = new System.Drawing.Point(832, 141);
-            this.LogoutBtn.Name = "LogoutBtn";
-            this.LogoutBtn.Size = new System.Drawing.Size(128, 50);
-            this.LogoutBtn.TabIndex = 15;
-            this.LogoutBtn.Text = "Logout";
-            this.LogoutBtn.UseVisualStyleBackColor = false;
-            this.LogoutBtn.Click += new System.EventHandler(this.LogoutBtn_Click);
             // 
             // AdminBoardUsernameTB
             // 
@@ -381,7 +351,6 @@
             this.Controls.Add(this.BlockBtn);
             this.Controls.Add(this.WarnBtn);
             this.Controls.Add(this.AdminBoardLabel);
-            this.Controls.Add(this.LogoutBtn);
             this.Controls.Add(this.LoginBtn);
             this.Controls.Add(this.SignUpBtn);
             this.Controls.Add(this.PasswordLabel);
@@ -389,7 +358,6 @@
             this.Controls.Add(this.PortTB);
             this.Controls.Add(this.IPAddressTB);
             this.Controls.Add(this.ConnectBtn);
-            this.Controls.Add(this.DisconnectBtn);
             this.Controls.Add(this.PortLabel);
             this.Controls.Add(this.ServerIPLabel);
             this.Controls.Add(this.sendMessageButton);
@@ -407,7 +375,6 @@
         private System.Windows.Forms.Button sendMessageButton;
         private System.Windows.Forms.Label ServerIPLabel;
         private System.Windows.Forms.Label PortLabel;
-        private System.Windows.Forms.Button DisconnectBtn;
         private System.Windows.Forms.Button ConnectBtn;
         private System.Windows.Forms.TextBox IPAddressTB;
         private System.Windows.Forms.TextBox PortTB;
@@ -415,7 +382,6 @@
         private System.Windows.Forms.Button SignUpBtn;
         private System.Windows.Forms.Label PasswordLabel;
         private System.Windows.Forms.Label UsernameLabel;
-        private System.Windows.Forms.Button LogoutBtn;
         private System.Windows.Forms.TextBox AdminBoardUsernameTB;
         private System.Windows.Forms.Button BlockBtn;
         private System.Windows.Forms.Button WarnBtn;

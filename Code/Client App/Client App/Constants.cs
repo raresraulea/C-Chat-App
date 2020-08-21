@@ -18,5 +18,10 @@ namespace Client_App
         internal static Color WarnBtnActive = Color.LightSalmon;
         internal static Color DisconnectBtnActive = Color.LightSalmon;
         internal static Color LogoutBtnActive = Color.LightSalmon;
+        internal static Color DisconnectPopupColor = Color.DarkOrange;
+        internal static Color SignUpPopupColor = Color.RoyalBlue;
+        internal static Color LoginPopupColor = Color.MediumSeaGreen;
+        internal static Color LogoutPopupColor = Color.DarkOrange;
+        internal static Color WrongCredentialsPopupColor= Color.DarkOrange;
     }
 }

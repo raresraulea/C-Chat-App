@@ -40,14 +40,8 @@
             this.SignUpBtn = new System.Windows.Forms.Button();
             this.PasswordLabel = new System.Windows.Forms.Label();
             this.UsernameLabel = new System.Windows.Forms.Label();
-            this.AdminBoardUsernameTB = new System.Windows.Forms.TextBox();
-            this.BlockBtn = new System.Windows.Forms.Button();
-            this.WarnBtn = new System.Windows.Forms.Button();
-            this.AdminBoardLabel = new System.Windows.Forms.Label();
-            this.DeleteAccBtn = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             this.ConnectionLabel = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.MessagesListView = new System.Windows.Forms.ListView();
@@ -183,73 +177,6 @@
             this.UsernameLabel.TabIndex = 9;
             this.UsernameLabel.Text = "Username";
             // 
-            // AdminBoardUsernameTB
-            // 
-            this.AdminBoardUsernameTB.BackColor = System.Drawing.Color.LightGray;
-            this.AdminBoardUsernameTB.Enabled = false;
-            this.AdminBoardUsernameTB.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.AdminBoardUsernameTB.ForeColor = System.Drawing.SystemColors.InactiveCaption;
-            this.AdminBoardUsernameTB.Location = new System.Drawing.Point(136, 260);
-            this.AdminBoardUsernameTB.Margin = new System.Windows.Forms.Padding(5);
-            this.AdminBoardUsernameTB.Name = "AdminBoardUsernameTB";
-            this.AdminBoardUsernameTB.Size = new System.Drawing.Size(262, 23);
-            this.AdminBoardUsernameTB.TabIndex = 19;
-            this.AdminBoardUsernameTB.Text = "Username...";
-            this.AdminBoardUsernameTB.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            // 
-            // BlockBtn
-            // 
-            this.BlockBtn.BackColor = System.Drawing.Color.LightGray;
-            this.BlockBtn.Enabled = false;
-            this.BlockBtn.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BlockBtn.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.BlockBtn.Location = new System.Drawing.Point(630, 253);
-            this.BlockBtn.Name = "BlockBtn";
-            this.BlockBtn.Size = new System.Drawing.Size(128, 50);
-            this.BlockBtn.TabIndex = 18;
-            this.BlockBtn.Text = "Block";
-            this.BlockBtn.UseVisualStyleBackColor = false;
-            this.BlockBtn.Click += new System.EventHandler(this.button1_Click_1);
-            // 
-            // WarnBtn
-            // 
-            this.WarnBtn.BackColor = System.Drawing.Color.LightGray;
-            this.WarnBtn.Enabled = false;
-            this.WarnBtn.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.WarnBtn.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.WarnBtn.Location = new System.Drawing.Point(429, 250);
-            this.WarnBtn.Name = "WarnBtn";
-            this.WarnBtn.Size = new System.Drawing.Size(128, 50);
-            this.WarnBtn.TabIndex = 17;
-            this.WarnBtn.Text = "Warn";
-            this.WarnBtn.UseVisualStyleBackColor = false;
-            this.WarnBtn.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // AdminBoardLabel
-            // 
-            this.AdminBoardLabel.AutoSize = true;
-            this.AdminBoardLabel.Enabled = false;
-            this.AdminBoardLabel.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.AdminBoardLabel.Location = new System.Drawing.Point(24, 263);
-            this.AdminBoardLabel.Name = "AdminBoardLabel";
-            this.AdminBoardLabel.Size = new System.Drawing.Size(109, 17);
-            this.AdminBoardLabel.TabIndex = 16;
-            this.AdminBoardLabel.Text = "Admin Board";
-            this.AdminBoardLabel.Click += new System.EventHandler(this.label2_Click);
-            // 
-            // DeleteAccBtn
-            // 
-            this.DeleteAccBtn.BackColor = System.Drawing.Color.LightGray;
-            this.DeleteAccBtn.Enabled = false;
-            this.DeleteAccBtn.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.DeleteAccBtn.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.DeleteAccBtn.Location = new System.Drawing.Point(832, 253);
-            this.DeleteAccBtn.Name = "DeleteAccBtn";
-            this.DeleteAccBtn.Size = new System.Drawing.Size(141, 50);
-            this.DeleteAccBtn.TabIndex = 20;
-            this.DeleteAccBtn.Text = "Delete Account";
-            this.DeleteAccBtn.UseVisualStyleBackColor = false;
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -267,15 +194,6 @@
             this.label4.Size = new System.Drawing.Size(1088, 17);
             this.label4.TabIndex = 22;
             this.label4.Text = resources.GetString("label4.Text");
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(-42, 313);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(1088, 17);
-            this.label5.TabIndex = 23;
-            this.label5.Text = resources.GetString("label5.Text");
             // 
             // ConnectionLabel
             // 
@@ -329,6 +247,7 @@
             this.PasswordTB.Enabled = false;
             this.PasswordTB.Location = new System.Drawing.Point(136, 180);
             this.PasswordTB.Name = "PasswordTB";
+            this.PasswordTB.PasswordChar = '*';
             this.PasswordTB.Size = new System.Drawing.Size(261, 22);
             this.PasswordTB.TabIndex = 28;
             // 
@@ -343,14 +262,8 @@
             this.Controls.Add(this.MessagesListView);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.ConnectionLabel);
-            this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.DeleteAccBtn);
-            this.Controls.Add(this.AdminBoardUsernameTB);
-            this.Controls.Add(this.BlockBtn);
-            this.Controls.Add(this.WarnBtn);
-            this.Controls.Add(this.AdminBoardLabel);
             this.Controls.Add(this.LoginBtn);
             this.Controls.Add(this.SignUpBtn);
             this.Controls.Add(this.PasswordLabel);
@@ -382,14 +295,8 @@
         private System.Windows.Forms.Button SignUpBtn;
         private System.Windows.Forms.Label PasswordLabel;
         private System.Windows.Forms.Label UsernameLabel;
-        private System.Windows.Forms.TextBox AdminBoardUsernameTB;
-        private System.Windows.Forms.Button BlockBtn;
-        private System.Windows.Forms.Button WarnBtn;
-        private System.Windows.Forms.Label AdminBoardLabel;
-        private System.Windows.Forms.Button DeleteAccBtn;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label ConnectionLabel;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ListView MessagesListView;

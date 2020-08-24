@@ -73,7 +73,12 @@ namespace Server
         public static string handleLogin(User user)
         {
             Login login = Login.Instance;
-            return login.verifyLoginData(user);
+            
+            string loginResponse = login.verifyLoginData(user);
+            if (loginResponse == "Logged In!" || loginResponse == "Welcome, Admin!")
+                onlineUsers.Add(user);
+            
+            return loginResponse;
         }
 
         public static void sendChatHistoryToClient()
@@ -125,7 +130,11 @@ namespace Server
                     return "Message handled!";
                     break;
                 case "Login":
-                    return handleLogin(new User() { username = messageFromClient.username, password = messageFromClient.password });
+                    User user = new User();
+                    user.username = messageFromClient.username;
+                    user.password = messageFromClient.password;
+                    //new User() { username = messageFromClient.username, password = messageFromClient.password }
+                    return handleLogin(user);
                     break;
                 case "SignUp":
                     return handleSignUp(new User() { username = messageFromClient.username, password = messageFromClient.password });

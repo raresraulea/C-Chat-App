@@ -20,6 +20,7 @@ namespace Client_App
     public partial class Form1 : Form
     {
         connectionToServer connection;
+        AdminForm adminApp = new AdminForm();
 
         public Form1()
         {
@@ -137,10 +138,21 @@ namespace Client_App
             StreamReader streamReader = new StreamReader(connection.networkStream);
             string responseFromServer = streamReader.ReadLine();
             this.label7.Text = responseFromServer;
-            showSignUpPopUp();
+            if (responseFromServer != "Username already taken")
+                showSignUpPopUp();
+            else
+                showRetrySignUpPopup();
 
             connection.networkStream.Close();
             connection.client.Close();
+        }
+
+        private void showRetrySignUpPopup()
+        {
+            Popup popup = new Popup();
+            popup.BackColor = Constants.LogoutBtnActive;
+            popup.message.Text = "Username already taken. Retry!";
+            popup.Show();
         }
 
         private static void showSignUpPopUp()
@@ -187,6 +199,7 @@ namespace Client_App
         }
         private void LoginBtn_Click(object sender, EventArgs e)
         {
+            
             if (this.LoginBtn.Text == "Login")
             {
                 connection = new connectionToServer();
@@ -211,6 +224,7 @@ namespace Client_App
                 }
                 else if (responseFromServer == "Welcome, Admin!")
                 {
+                    adminApp.Show();
                     ActivateUserInterface_login();
                     ActivateAdminInterface_login();
                     showWelcomeAdminPopup();
@@ -227,6 +241,7 @@ namespace Client_App
             }
             else if (LoginBtn.Text == "Logout")
             {
+                adminApp.Visible=false;
                 doLogout();
                 showLogoutPopup();
             }
@@ -275,18 +290,6 @@ namespace Client_App
 
         private void LogoutDeactivations()
         {
-            this.BlockBtn.Enabled = false;
-            this.BlockBtn.BackColor = Constants.Inactive;
-
-            this.WarnBtn.Enabled = false;
-            this.WarnBtn.BackColor = Constants.Inactive;
-
-            this.DeleteAccBtn.Enabled = false;
-            this.DeleteAccBtn.BackColor = Constants.Inactive;
-
-            this.AdminBoardUsernameTB.Enabled = false;
-            this.AdminBoardUsernameTB.BackColor = Constants.Inactive;
-
             this.messageBox.Enabled = false;
             this.messageBox.BackColor = Constants.Inactive;
 
@@ -338,17 +341,6 @@ namespace Client_App
             this.PasswordTB.Enabled = false;
             this.PasswordTB.BackColor = Constants.Inactive;
 
-            this.BlockBtn.Enabled = true;
-            this.BlockBtn.BackColor = Color.LightCoral;
-
-            this.WarnBtn.Enabled = true;
-            this.WarnBtn.BackColor = Constants.WarnBtnActive;// Color.LightSalmon;
-
-            this.DeleteAccBtn.Enabled = true;
-            this.DeleteAccBtn.BackColor = Color.OrangeRed;
-
-            this.AdminBoardUsernameTB.Enabled = true;
-            this.AdminBoardUsernameTB.BackColor = Constants.TBActive;
         }
         private void ActivateUserInterface_login()
         {
@@ -401,6 +393,6 @@ namespace Client_App
 
         }
 
-
+        
     }
 }

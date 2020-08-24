@@ -19,7 +19,7 @@ namespace Client_App
         }
         private void ConnectedForm_Load(object sender, EventArgs e)
         {
-            timer.Interval = 1000;
+            timer.Interval = 1300;
             timer.Tick += new EventHandler(timer_Tick);
             timer.Start();
         }

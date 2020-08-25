@@ -21,6 +21,7 @@ namespace Client_App
     {
         connectionToServer connection;
         AdminForm adminApp = new AdminForm();
+        bool connected = false;
 
         public Form1()
         {
@@ -36,34 +37,60 @@ namespace Client_App
             {
                 if (this.ConnectBtn.Text == "Connect")
                 {
-                    connection = new connectionToServer();
-                    string hostAddress = this.IPAddressTB.Text;
-                    if (hostAddress == "this" || hostAddress == "localhost")
-                        connection.client = new TcpClient(Dns.GetHostName(), int.Parse(this.PortTB.Text));
-                    connection.networkStream = connection.client.GetStream();
+                    //connection = new connectionToServer();
+                    //string hostAddress = this.IPAddressTB.Text;
+                    //if (hostAddress == "this" || hostAddress == "localhost")
+                    //    connection.client = new TcpClient(Dns.GetHostName(), int.Parse(this.PortTB.Text));
+                    //connection.networkStream = connection.client.GetStream();
 
-                    ConnectionLabel.Text = "Wait...";
-                    ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
-                    messageToSend.MessageText = "Connection Request";
-                    messageToSend.Type = "Connection";
-                    
-                    BinaryFormatter formatter = new BinaryFormatter();
-                    formatter.Serialize(connection.networkStream, messageToSend);
+                    //ConnectionLabel.Text = "Wait...";
+                    //ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
+                    //messageToSend.MessageText = "Connection Request";
+                    //messageToSend.Type = "Connection";
 
-                    StreamReader streamReader = new StreamReader(connection.networkStream);
-                    string responseFromServer = streamReader.ReadLine();
-                    this.ConnectionLabel.Text = responseFromServer;
-                    
-                    Popup popup = new Popup();
-                    popup.Show();
-                    
-                    ActivateConnectionInterface();
-                    this.ConnectBtn.Text = "Disconnect";
-                    this.ConnectBtn.BackColor = Constants.DisconnectBtnActive;
+                    //BinaryFormatter formatter = new BinaryFormatter();
+                    //formatter.Serialize(connection.networkStream, messageToSend);
 
-                    connection.client.Close();
-                    connection.networkStream.Flush();
-                    connection.networkStream.Close();
+                    //StreamReader streamReader = new StreamReader(connection.networkStream);
+                    //string responseFromServer = streamReader.ReadLine();
+                    //this.ConnectionLabel.Text = responseFromServer;
+
+                    //Popup popup = new Popup();
+                    //popup.Show();
+
+                    //ActivateConnectionInterface();
+                    //this.ConnectBtn.Text = "Disconnect";
+                    //this.ConnectBtn.BackColor = Constants.DisconnectBtnActive;
+
+                    //connection.client.Close();
+                    //connection.networkStream.Flush();
+                    //.networkStream.Close();
+                    connected = true;
+                    IPAddress ip = IPAddress.Parse("127.0.0.1");
+                    int port = 1302;
+                    TcpClient client = new TcpClient();
+                    client.Connect(ip, port);
+                    Console.WriteLine("client connected!!");
+                    NetworkStream ns = client.GetStream();
+                    Thread thread = new Thread(o => ReceiveData((TcpClient)o));
+
+                    thread.Start(client);
+
+                    //string s;
+                    //while (connected)
+                    //{
+                    //    byte[] buffer = Encoding.ASCII.GetBytes(s);
+                    //    ns.Write(buffer, 0, buffer.Length);
+                    //}
+
+                    client.Client.Shutdown(SocketShutdown.Send);
+                    thread.Join();
+                    ns.Close();
+                    client.Close();
+                    //Console.WriteLine("disconnect from server!!");
+                    Console.ReadKey();
+
+
                 }
                 else if (this.ConnectBtn.Text == "Disconnect")
                 {
@@ -91,7 +118,17 @@ namespace Client_App
                 Console.WriteLine("failed to connect..." + exc.Message);
             }
         }
+        static void ReceiveData(TcpClient client)
+        {
+            NetworkStream ns = client.GetStream();
+            byte[] receivedBytes = new byte[1024];
+            int byte_count;
 
+            while ((byte_count = ns.Read(receivedBytes, 0, receivedBytes.Length)) > 0)
+            {
+                Console.Write(Encoding.ASCII.GetString(receivedBytes, 0, byte_count));
+            }
+        }
         private static void showDisconnectPopup()
         {
             Popup popup = new Popup();
@@ -199,7 +236,7 @@ namespace Client_App
         }
         private void LoginBtn_Click(object sender, EventArgs e)
         {
-            
+
             if (this.LoginBtn.Text == "Login")
             {
                 connection = new connectionToServer();
@@ -229,7 +266,7 @@ namespace Client_App
                     ActivateAdminInterface_login();
                     showWelcomeAdminPopup();
                 }
-                else if(responseFromServer == "Wrong Credentials!")
+                else if (responseFromServer == "Wrong Credentials!")
                 {
                     Popup popup = new Popup();
                     popup.BackColor = Constants.WrongCredentialsPopupColor;
@@ -241,7 +278,7 @@ namespace Client_App
             }
             else if (LoginBtn.Text == "Logout")
             {
-                adminApp.Visible=false;
+                adminApp.Visible = false;
                 doLogout();
                 showLogoutPopup();
             }
@@ -393,6 +430,6 @@ namespace Client_App
 
         }
 
-        
+
     }
 }

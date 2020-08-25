@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Threading;
 using ChatAppClasses;
 
 namespace Server
@@ -13,6 +14,9 @@ namespace Server
     {
         public static Database serverDatabase;
         public static List<User> onlineUsers = new List<User>();
+        int count = 1;
+        static readonly object _lock = new object();
+        static readonly Dictionary<int, TcpClient> list_clients = new Dictionary<int, TcpClient>();
 
         public void connectToDatabase(Database database)
         {
@@ -24,32 +28,25 @@ namespace Server
             TcpListener listener = new TcpListener(System.Net.IPAddress.Any, 1302);
             listener.Start();
             Console.WriteLine("Server started...");
-            onlineUsers.Clear();
+            //onlineUsers.Clear();
             while (true)
             {
                 Console.WriteLine("Waiting for connection...");
-                TcpClient client = acceptConnectionToClient(listener);
-
+                TcpClient client = listener.AcceptTcpClient();
+                list_clients.Add(count, client);
                 NetworkStream networkStream = client.GetStream();
-                StreamReader streamReader = new StreamReader(client.GetStream());
-                StreamWriter streamWriter = new StreamWriter(client.GetStream());
                 IFormatter formatter = new BinaryFormatter();
-
+                Console.WriteLine(count);
                 try
                 {
-                    byte[] buffer = new byte[1024];
-                    //networkStream.Read(buffer);
-                    ChatAppClasses.Message messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(networkStream);
-                    //Message messageFromClient = new Message();
-                    //messageFromClient.setText(Encoding.UTF8.GetString(buffer));
-                    if(messageFromClient.Type == "Login")
-                        Console.WriteLine(messageFromClient.username + " " + messageFromClient.password);
-                    
-                    string  response = handleIncomingMessage(messageFromClient);
-                    
-                    networkStream.Write(Encoding.ASCII.GetBytes(response));
-                    streamWriter.Flush();
-                    streamWriter.Close();
+                    //byte[] buffer = new byte[1024];
+                    //ChatAppClasses.Message messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(networkStream);
+                    //string  response = handleIncomingMessage(messageFromClient);
+                    Thread t = new Thread(handle_clients);
+                    t.Start(count);
+                    count++;
+                    //networkStream.Write(Encoding.ASCII.GetBytes(response));
+
                 }
                 catch (Exception e)
                 {
@@ -58,7 +55,51 @@ namespace Server
                 }
             }
         }
+        public void handle_clients(object o)
+        {
+            int id = (int)o;
+            TcpClient client;
+            IFormatter formatter = new BinaryFormatter();
+            Console.WriteLine("Arrived");
+            lock (_lock) client = list_clients[id];
 
+            while (true)
+            {
+                NetworkStream stream = client.GetStream();
+                ChatAppClasses.Message messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(stream);
+
+                if (messageFromClient.MessageText.Length == 0)
+                {
+                    break;
+                }
+
+                if(messageFromClient.Type == "Message")
+                    broadcast(messageFromClient);
+                
+                //string response = handleIncomingMessage(messageFromClient);
+                //stream.Write(Encoding.ASCII.GetBytes(response));
+            }
+
+            lock (_lock) list_clients.Remove(id);
+            client.Client.Shutdown(SocketShutdown.Both);
+            client.Close();
+        }
+
+        public static void broadcast(ChatAppClasses.Message message)
+        {
+            //byte[] buffer = Encoding.ASCII.GetBytes(data + Environment.NewLine);
+            IFormatter formatter = new BinaryFormatter();
+
+            lock (_lock)
+            {
+                foreach (TcpClient c in list_clients.Values)
+                {
+                    NetworkStream stream = c.GetStream();
+                    //stream.Write(buffer, 0, buffer.Length);
+                    formatter.Serialize(stream, message);
+                }
+            }
+        }
         internal static void sendClientInvLoginMsg()
         {
             throw new NotImplementedException();

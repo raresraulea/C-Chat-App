@@ -17,6 +17,7 @@ namespace Server
         int count = 1;
         static readonly object _lock = new object();
         static readonly Dictionary<int, TcpClient> list_clients = new Dictionary<int, TcpClient>();
+        static readonly Dictionary<int, NetworkStream> list_networks = new Dictionary<int, NetworkStream>();
 
         public void connectToDatabase(Database database)
         {
@@ -28,27 +29,34 @@ namespace Server
             TcpListener listener = new TcpListener(System.Net.IPAddress.Any, 1302);
             listener.Start();
             Console.WriteLine("Server started...");
-            //onlineUsers.Clear();
+
             while (true)
             {
                 Console.WriteLine("Waiting for connection...");
+
                 TcpClient client = listener.AcceptTcpClient();
+                NetworkStream client_stream = client.GetStream();
+                list_networks.Add(count, client_stream);
+
                 Console.WriteLine("Accepted Client");
-                list_clients.Add(count, client);
-                NetworkStream networkStream = client.GetStream();
-                IFormatter formatter = new BinaryFormatter();
-                ChatAppClasses.Message messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(networkStream);
-                Console.WriteLine(messageFromClient.MessageText);
-                Console.WriteLine(count);
+
                 try
                 {
-                    //byte[] buffer = new byte[1024];
-                    //ChatAppClasses.Message messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(networkStream);
-                    //string  response = handleIncomingMessage(messageFromClient);
-                    //Thread t = new Thread(handle_clients);
-                    //t.Start(count);
-                    //count++;
-                    //networkStream.Write(Encoding.ASCII.GetBytes(response));
+                    list_clients.Add(count, client);
+
+                }
+                catch (Exception e)
+                {
+
+                    Console.WriteLine(e.Message);
+                }
+
+                try
+                {
+                    Thread t = new Thread(handle_clients);
+                    t.Start(count);
+                    count++;
+
 
                 }
                 catch (Exception e)
@@ -61,25 +69,41 @@ namespace Server
         public void handle_clients(object o)
         {
             int id = (int)o;
-            TcpClient client;
-            IFormatter formatter = new BinaryFormatter();
-            Console.WriteLine("Arrived");
-            lock (_lock) client = list_clients[id];
+            Console.WriteLine(id);
 
+            //TcpClient client;
+            //lock (_lock) client = list_clients[id];
+
+            NetworkStream ns;
+            lock (_lock) ns = list_networks[id];
+
+            Console.WriteLine("Arrived");
+            IFormatter formatter = new BinaryFormatter();
+            ChatAppClasses.Message messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(ns);
+            Console.WriteLine(messageFromClient.MessageText);
+            
             while (true)
             {
-                NetworkStream stream = client.GetStream();
-                ChatAppClasses.Message messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(stream);
-                Console.WriteLine(messageFromClient.MessageText);
-
-                if (messageFromClient.MessageText.Length == 0)
+                Console.WriteLine("msg");
+                try
                 {
-                    break;
+                    
                 }
+                catch (Exception e)
+                {
+
+                    Console.WriteLine(e.Message);
+                }
+                Console.WriteLine("dupa msg");
+
+                //if (messageFromClient.MessageText.Length == 0)
+                //{
+                //    break;
+                //}
 
                 //if(messageFromClient.Type == "Message")
-                    broadcast(messageFromClient);
-                
+                //broadcast(messageFromClient);
+
                 //string response = handleIncomingMessage(messageFromClient);
                 //stream.Write(Encoding.ASCII.GetBytes(response));
             }
@@ -118,11 +142,11 @@ namespace Server
         public static string handleLogin(User user)
         {
             Login login = Login.Instance;
-            
+
             string loginResponse = login.verifyLoginData(user);
             if (loginResponse == "Logged In!" || loginResponse == "Welcome, Admin!")
                 onlineUsers.Add(user);
-            
+
             return loginResponse;
         }
 

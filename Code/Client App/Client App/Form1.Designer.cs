@@ -132,7 +132,6 @@
             // LoginBtn
             // 
             this.LoginBtn.BackColor = System.Drawing.Color.LightGray;
-            this.LoginBtn.Enabled = false;
             this.LoginBtn.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LoginBtn.ForeColor = System.Drawing.SystemColors.HighlightText;
             this.LoginBtn.Location = new System.Drawing.Point(429, 141);

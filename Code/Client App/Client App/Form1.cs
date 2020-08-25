@@ -65,20 +65,23 @@ namespace Client_App
                     //connection.client.Close();
                     //connection.networkStream.Flush();
                     //.networkStream.Close();
-                    connected = true;
                     IPAddress ip = IPAddress.Parse("127.0.0.1");
                     int port = 1302;
+                    
                     TcpClient client = new TcpClient();
                     client.Connect(ip, port);
-                    Console.WriteLine("client connected!!");
+                    
                     NetworkStream ns = client.GetStream();
+                    connection.networkStream = ns;
+                    
                     ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
                     messageToSend.MessageText = "Connection Request";
+                    
                     BinaryFormatter formatter = new BinaryFormatter();
-                    formatter.Serialize(connection.networkStream, messageToSend);
-                    Thread thread = new Thread(o => ReceiveData((TcpClient)o));
+                    formatter.Serialize(ns, messageToSend);
 
-                    thread.Start(client);
+                    //Thread thread = new Thread(o => ReceiveData((TcpClient)o));
+                    //thread.Start(client);
 
                     //string s;
                     //while (connected)

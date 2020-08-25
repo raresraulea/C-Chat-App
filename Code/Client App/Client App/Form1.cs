@@ -21,7 +21,6 @@ namespace Client_App
     {
         connectionToServer connection;
         AdminForm adminApp = new AdminForm();
-        bool connected = false;
 
         public Form1()
         {
@@ -37,67 +36,35 @@ namespace Client_App
             {
                 if (this.ConnectBtn.Text == "Connect")
                 {
-                    //connection = new connectionToServer();
-                    //string hostAddress = this.IPAddressTB.Text;
-                    //if (hostAddress == "this" || hostAddress == "localhost")
-                    //    connection.client = new TcpClient(Dns.GetHostName(), int.Parse(this.PortTB.Text));
-                    //connection.networkStream = connection.client.GetStream();
+                    connection = new connectionToServer();
+                    string hostAddress = this.IPAddressTB.Text;
+                    if (hostAddress == "this" || hostAddress == "localhost")
+                        connection.client = new TcpClient(Dns.GetHostName(), int.Parse(this.PortTB.Text));
+                    connection.networkStream = connection.client.GetStream();
 
-                    //ConnectionLabel.Text = "Wait...";
-                    //ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
-                    //messageToSend.MessageText = "Connection Request";
-                    //messageToSend.Type = "Connection";
-
-                    //BinaryFormatter formatter = new BinaryFormatter();
-                    //formatter.Serialize(connection.networkStream, messageToSend);
-
-                    //StreamReader streamReader = new StreamReader(connection.networkStream);
-                    //string responseFromServer = streamReader.ReadLine();
-                    //this.ConnectionLabel.Text = responseFromServer;
-
-                    //Popup popup = new Popup();
-                    //popup.Show();
-
-                    //ActivateConnectionInterface();
-                    //this.ConnectBtn.Text = "Disconnect";
-                    //this.ConnectBtn.BackColor = Constants.DisconnectBtnActive;
-
-                    //connection.client.Close();
-                    //connection.networkStream.Flush();
-                    //.networkStream.Close();
-                    IPAddress ip = IPAddress.Parse("127.0.0.1");
-                    int port = 1302;
-                    
-                    TcpClient client = new TcpClient();
-                    client.Connect(ip, port);
-                    
-                    NetworkStream ns = client.GetStream();
-                    connection.networkStream = ns;
-                    
+                    ConnectionLabel.Text = "Wait...";
                     ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
                     messageToSend.MessageText = "Connection Request";
-                    
+                    messageToSend.username = "standard";
+                    messageToSend.Type = "Connection";
+
                     BinaryFormatter formatter = new BinaryFormatter();
-                    formatter.Serialize(ns, messageToSend);
+                    formatter.Serialize(connection.networkStream, messageToSend);
 
-                    //Thread thread = new Thread(o => ReceiveData((TcpClient)o));
-                    //thread.Start(client);
+                    StreamReader streamReader = new StreamReader(connection.networkStream);
+                    string responseFromServer = streamReader.ReadLine();
+                    this.ConnectionLabel.Text = responseFromServer;
 
-                    //string s;
-                    //while (connected)
-                    //{
-                    //    byte[] buffer = Encoding.ASCII.GetBytes(s);
-                    //    ns.Write(buffer, 0, buffer.Length);
-                    //}
+                    Popup popup = new Popup();
+                    popup.Show();
 
-                    //client.Client.Shutdown(SocketShutdown.Send);
-                    //thread.Join();
-                    //ns.Close();
-                    //client.Close();
-                    //Console.WriteLine("disconnect from server!!");
-                    Console.ReadKey();
+                    ActivateConnectionInterface();
+                    this.ConnectBtn.Text = "Disconnect";
+                    this.ConnectBtn.BackColor = Constants.DisconnectBtnActive;
 
-
+                    connection.client.Close();
+                    connection.networkStream.Flush();
+                    connection.networkStream.Close();
                 }
                 else if (this.ConnectBtn.Text == "Disconnect")
                 {
@@ -125,17 +92,7 @@ namespace Client_App
                 Console.WriteLine("failed to connect..." + exc.Message);
             }
         }
-        static void ReceiveData(TcpClient client)
-        {
-            NetworkStream ns = client.GetStream();
-            byte[] receivedBytes = new byte[1024];
-            int byte_count;
 
-            while ((byte_count = ns.Read(receivedBytes, 0, receivedBytes.Length)) > 0)
-            {
-                Console.Write(Encoding.ASCII.GetString(receivedBytes, 0, byte_count));
-            }
-        }
         private static void showDisconnectPopup()
         {
             Popup popup = new Popup();

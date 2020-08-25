@@ -87,16 +87,16 @@ C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Serv
 C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
 C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
+C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\bin\Debug\netcoreapp3.1\ChatAppClasses.dll
+C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\bin\Debug\netcoreapp3.1\Class Library.dll
+C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\bin\Debug\netcoreapp3.1\ChatAppClasses.pdb
+C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\bin\Debug\netcoreapp3.1\Class Library.pdb
 C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\obj\Debug\netcoreapp3.1\Server.csprojAssemblyReference.cache
 C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\obj\Debug\netcoreapp3.1\Server.AssemblyInfoInputs.cache
 C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\obj\Debug\netcoreapp3.1\Server.AssemblyInfo.cs
 C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\obj\Debug\netcoreapp3.1\Server.csproj.CopyComplete
 C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\obj\Debug\netcoreapp3.1\Server.dll
 C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\obj\Debug\netcoreapp3.1\Server.pdb
-C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\bin\Debug\netcoreapp3.1\Class Library.dll
-C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\bin\Debug\netcoreapp3.1\Class Library.pdb
-C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\bin\Debug\netcoreapp3.1\ChatAppClasses.dll
-C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\bin\Debug\netcoreapp3.1\ChatAppClasses.pdb
 C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\bin\Debug\netcoreapp3.1\Client App.exe
 C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\bin\Debug\netcoreapp3.1\Client App.pdb
 C:\Users\raresraulea1\Desktop\C# Chat App NTT\C-Chat-App\Code\Server\Server\Server\bin\Debug\netcoreapp3.1\Client App.exe.config

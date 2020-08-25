@@ -14,6 +14,7 @@ namespace Server
             Server_class server = new Server_class();
             Database DB = new Database();
             server.connectToDatabase(DB);
+            //server.run();
             server.run();
             
         }

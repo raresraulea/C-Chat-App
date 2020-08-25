@@ -33,18 +33,21 @@ namespace Server
             {
                 Console.WriteLine("Waiting for connection...");
                 TcpClient client = listener.AcceptTcpClient();
+                Console.WriteLine("Accepted Client");
                 list_clients.Add(count, client);
                 NetworkStream networkStream = client.GetStream();
                 IFormatter formatter = new BinaryFormatter();
+                ChatAppClasses.Message messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(networkStream);
+                Console.WriteLine(messageFromClient.MessageText);
                 Console.WriteLine(count);
                 try
                 {
                     //byte[] buffer = new byte[1024];
                     //ChatAppClasses.Message messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(networkStream);
                     //string  response = handleIncomingMessage(messageFromClient);
-                    Thread t = new Thread(handle_clients);
-                    t.Start(count);
-                    count++;
+                    //Thread t = new Thread(handle_clients);
+                    //t.Start(count);
+                    //count++;
                     //networkStream.Write(Encoding.ASCII.GetBytes(response));
 
                 }
@@ -67,29 +70,30 @@ namespace Server
             {
                 NetworkStream stream = client.GetStream();
                 ChatAppClasses.Message messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(stream);
+                Console.WriteLine(messageFromClient.MessageText);
 
                 if (messageFromClient.MessageText.Length == 0)
                 {
                     break;
                 }
 
-                if(messageFromClient.Type == "Message")
+                //if(messageFromClient.Type == "Message")
                     broadcast(messageFromClient);
                 
                 //string response = handleIncomingMessage(messageFromClient);
                 //stream.Write(Encoding.ASCII.GetBytes(response));
             }
 
-            lock (_lock) list_clients.Remove(id);
-            client.Client.Shutdown(SocketShutdown.Both);
-            client.Close();
+            //lock (_lock) list_clients.Remove(id);
+            //client.Client.Shutdown(SocketShutdown.Both);
+            //client.Close();
         }
 
         public static void broadcast(ChatAppClasses.Message message)
         {
             //byte[] buffer = Encoding.ASCII.GetBytes(data + Environment.NewLine);
             IFormatter formatter = new BinaryFormatter();
-
+            Console.WriteLine("arrived br");
             lock (_lock)
             {
                 foreach (TcpClient c in list_clients.Values)

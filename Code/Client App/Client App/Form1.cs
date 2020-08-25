@@ -72,6 +72,10 @@ namespace Client_App
                     client.Connect(ip, port);
                     Console.WriteLine("client connected!!");
                     NetworkStream ns = client.GetStream();
+                    ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
+                    messageToSend.MessageText = "Connection Request";
+                    BinaryFormatter formatter = new BinaryFormatter();
+                    formatter.Serialize(connection.networkStream, messageToSend);
                     Thread thread = new Thread(o => ReceiveData((TcpClient)o));
 
                     thread.Start(client);
@@ -83,10 +87,10 @@ namespace Client_App
                     //    ns.Write(buffer, 0, buffer.Length);
                     //}
 
-                    client.Client.Shutdown(SocketShutdown.Send);
-                    thread.Join();
-                    ns.Close();
-                    client.Close();
+                    //client.Client.Shutdown(SocketShutdown.Send);
+                    //thread.Join();
+                    //ns.Close();
+                    //client.Close();
                     //Console.WriteLine("disconnect from server!!");
                     Console.ReadKey();
 

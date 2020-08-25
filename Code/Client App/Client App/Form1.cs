@@ -168,13 +168,21 @@ namespace Client_App
         {
             try
             {
-                //TcpClient client = new TcpClient(Dns.GetHostName(), 1302);
+                connection = new connectionToServer();
+                string hostAddress = this.IPAddressTB.Text;
+                if (hostAddress == "this" || hostAddress == "localhost")
+                    connection.client = new TcpClient(Dns.GetHostName(), int.Parse(this.PortTB.Text));
+                connection.networkStream = connection.client.GetStream();
                 BinaryFormatter formatter = new BinaryFormatter();
+                //TcpClient client = new TcpClient(Dns.GetHostName(), 1302);
+                
+
                 //NetworkStream networkStream = client.GetStream();
 
                 ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
                 messageToSend.MessageText = this.messageBox.Text;
                 messageToSend.Type = "Message";
+                messageToSend.username = "standard";
                 formatter.Serialize(connection.networkStream, messageToSend);
                 this.messageBox.Text = "";
 

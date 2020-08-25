@@ -54,18 +54,20 @@ namespace Server
                     if (messageFromClient.Type == "Login")
                         Console.WriteLine(messageFromClient.username + " " + messageFromClient.password);
 
-                    string response = handleIncomingMessage(messageFromClient);
+                    //string response = handleIncomingMessage(messageFromClient);
 
-                    networkStream.Write(Encoding.ASCII.GetBytes(response));
+                    //networkStream.Write(Encoding.ASCII.GetBytes(response));
                     /* add to dictionary, listbox and send userList  */
-                    clientList.Add(username, client);
+                    if(!clientList.ContainsKey(username))
+                        clientList.Add(username, client);
                     //announce(username + " Joined ", username, false);
 
                     ////await Task.Delay(1000).ContinueWith(t => sendUsersList());
                     //streamWriter.Flush();
                     //streamWriter.Close();
 
-                    var c = new Thread(() => ServerReceive(client, username));
+                    //var c = new Thread(() => ServerReceive(client, username));
+                    var c = new Thread(() => handleIncomingMessage(client, messageFromClient));
                     c.Start();
                 }
                 catch (Exception e)
@@ -79,7 +81,7 @@ namespace Server
         {
             byte[] data = new byte[1000];
             string text = null;
-            Console.WriteLine(username);
+            //Console.WriteLine(username);
             while (true)
             {
                
@@ -104,7 +106,7 @@ namespace Server
                
             }
         }
-        public Object ByteArrayToObject(byte[] arrBytes)
+        public object ByteArrayToObject(byte[] arrBytes)
         {
             using (var memStream = new MemoryStream())
             {
@@ -219,33 +221,42 @@ namespace Server
         {
 
         }
-        public string handleIncomingMessage(ChatAppClasses.Message messageFromClient)
+        public void handleIncomingMessage(TcpClient client, ChatAppClasses.Message messageFromClient)
         {
             Console.WriteLine("The message from the client is: " + messageFromClient.MessageText);
             //if (messageFromClient.Type == "Login" && serverDatabase.checkCredentials(messageFromClient.username, messageFromClient.password))
             //    return "Logged In!";
-
+            string response;
             switch (messageFromClient.Type)
             {
                 case "Connection":
-                    return "Connected";
+                    response = "Connected";
                     break;
                 case "Message":
-                    return "Message handled!";
+                    response =  "Message handled!";
                     break;
                 case "Login":
                     User user = new User();
                     user.username = messageFromClient.username;
                     user.password = messageFromClient.password;
                     //new User() { username = messageFromClient.username, password = messageFromClient.password }
-                    return handleLogin(user);
+                    response = handleLogin(user);
                     break;
                 case "SignUp":
-                    return handleSignUp(new User() { username = messageFromClient.username, password = messageFromClient.password });
+                    response = handleSignUp(new User() { username = messageFromClient.username, password = messageFromClient.password });
+                    break;
+
+                default:
+                    response = "Error";
                     break;
             }
+            Console.WriteLine(response);
+            NetworkStream stream = client.GetStream();
+            stream.Write(Encoding.ASCII.GetBytes(response));
+            stream.Flush();
+            stream.Close();
             Server_class.serverDatabase.saveMessageToDb(messageFromClient);
-            return "No Case";
+            
 
         }
         public void sendPrivateMessage()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization;
@@ -16,8 +17,6 @@ namespace Server
         public static Database serverDatabase;
         public static List<User> onlineUsers = new List<User>();
 
-        TcpClient client;
-        String clNo;
         Dictionary<string, TcpClient> clientList = new Dictionary<string, TcpClient>();
         CancellationTokenSource cancellation = new CancellationTokenSource();
         List<string> chat = new List<string>();
@@ -30,10 +29,13 @@ namespace Server
         public void run()
         {
             clientList.Clear();
+            onlineUsers.Clear();
+
             TcpListener listener = new TcpListener(System.Net.IPAddress.Any, 1302);
             listener.Start();
+
             Console.WriteLine("Server started...");
-            onlineUsers.Clear();
+
             while (true)
             {
                 Console.WriteLine("Waiting for connection...");
@@ -43,7 +45,6 @@ namespace Server
 
                 try
                 {
-
                     byte[] buffer = new byte[1024];
 
                     if (!clientList.ContainsValue(client))
@@ -65,18 +66,22 @@ namespace Server
         {
             NetworkStream stream;
             Console.WriteLine("tratez " + client.ToString());
-            //if (messageFromClient.Type == "Login" && serverDatabase.checkCredentials(messageFromClient.username, messageFromClient.password))
-            //    return "Logged In!";
             IFormatter formatter = new BinaryFormatter();
+
             while (true)
             {
                 try
                 {
+
                     stream = client.GetStream();
                     StreamWriter streamWriter = new StreamWriter(stream);
+
                     ChatAppClasses.Message messageFromClient;
                     messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(stream);
+
                     Console.WriteLine("The message from the client is: " + messageFromClient.MessageText);
+
+
                     string response;
                     switch (messageFromClient.Type)
                     {
@@ -92,6 +97,11 @@ namespace Server
                             user.password = messageFromClient.password;
                             response = handleLogin(user);
                             break;
+                        case "Logout":
+                            var clientToBeRemoved = clientList.First(dictionaryItem => dictionaryItem.Value == client);
+                            clientList.Remove(clientToBeRemoved.Key);
+                            response = "Logged Out!";
+                            break;
                         case "SignUp":
                             response = handleSignUp(new User() { username = messageFromClient.username, password = messageFromClient.password });
                             break;
@@ -100,16 +110,27 @@ namespace Server
                             response = "Error";
                             break;
                     }
+
                     Console.WriteLine(response);
-                    byte[] outStream = Encoding.ASCII.GetBytes(response);
-                    streamWriter.Write(response);
-                    streamWriter.Flush();
-                    streamWriter.Close();
+
+                    ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
+                    messageToSend.MessageText = response;
+
+                    formatter.Serialize(stream, messageToSend);
+                    stream.Flush();
+
+                    //byte[] outStream = Encoding.ASCII.GetBytes(response);
+                    //stream.Write(outStream, 0, outStream.Length);
+                    //stream.Flush();
                     //stream.Close();
-                    //client.Connect(Dns.GetHostName(), 1302);
-                    Server_class.serverDatabase.saveMessageToDb(messageFromClient);
-                    //Console.WriteLine("am ex o data");
-                    //Thread.Sleep(100);
+
+                    //if(!client.Connected)
+                    //    Console.WriteLine("NC");
+                    if(messageFromClient.Type == "Message")
+                         Server_class.serverDatabase.saveMessageToDb(messageFromClient);
+                    if (messageFromClient.Type == "Logout")
+                        break;
+
                     Console.WriteLine("Am tratat " + client.ToString());
                 }
                 catch (Exception e)
@@ -177,20 +198,15 @@ namespace Server
 
                     if (flag)
                     {
-                        //broadcastBytes = Encoding.ASCII.GetBytes("gChat|*|" + uName + " says : " + msg);
-
                         chat.Add("gChat");
                         chat.Add(uName + " says : " + msg);
                         broadcastBytes = ObjectToByteArray(chat);
                     }
                     else
                     {
-                        //broadcastBytes = Encoding.ASCII.GetBytes("gChat|*|" + msg);
-
                         chat.Add("gChat");
                         chat.Add(msg);
                         broadcastBytes = ObjectToByteArray(chat);
-
                     }
 
                     broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);

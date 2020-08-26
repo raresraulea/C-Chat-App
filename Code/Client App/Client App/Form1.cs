@@ -19,8 +19,9 @@ namespace Client_App
 {
     public partial class Form1 : Form
     {
-        connectionToServer connection;
+        private connectionToServer connection;
         AdminForm adminApp = new AdminForm();
+        bool startedConnection = false;
 
         public Form1()
         {
@@ -28,70 +29,9 @@ namespace Client_App
             IPAddress hostIP = Dns.GetHostEntry(Dns.GetHostName()).AddressList[0];
             User clientUser = new User();
             clientUser.IP = hostIP.ToString();
-            label7.Text = Dns.GetHostName();
+
         }
-        private void ConnectBtn_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (this.ConnectBtn.Text == "Connect")
-                {
-                    connection = new connectionToServer();
-                    string hostAddress = this.IPAddressTB.Text;
-                    if (hostAddress == "this" || hostAddress == "localhost")
-                        connection.client = new TcpClient(Dns.GetHostName(), int.Parse(this.PortTB.Text));
-                    connection.networkStream = connection.client.GetStream();
-
-                    ConnectionLabel.Text = "Wait...";
-                    ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
-                    messageToSend.MessageText = "Connection Request";
-                    messageToSend.username = "standard";
-                    messageToSend.Type = "Connection";
-
-                    BinaryFormatter formatter = new BinaryFormatter();
-                    formatter.Serialize(connection.networkStream, messageToSend);
-
-                    StreamReader streamReader = new StreamReader(connection.networkStream);
-                    string responseFromServer = streamReader.ReadLine();
-                    this.ConnectionLabel.Text = responseFromServer;
-
-                    Popup popup = new Popup();
-                    popup.Show();
-
-                    ActivateConnectionInterface();
-                    this.ConnectBtn.Text = "Disconnect";
-                    this.ConnectBtn.BackColor = Constants.DisconnectBtnActive;
-
-                    connection.client.Close();
-                    connection.networkStream.Flush();
-                    connection.networkStream.Close();
-                }
-                else if (this.ConnectBtn.Text == "Disconnect")
-                {
-
-                    this.LoginBtn.Enabled = false;
-                    LoginBtn.BackColor = Constants.Inactive;
-                    this.SignUpBtn.Enabled = false;
-                    this.SignUpBtn.BackColor = Constants.Inactive;
-                    this.ConnectionLabel.Text = "Not Connected";
-                    this.ConnectionLabel.ForeColor = Color.Red;
-                    this.ConnectBtn.Enabled = true;
-                    this.label7.Text = "Bye Bye!";
-                    ConnectBtn.BackColor = Constants.ConnectBtnActive;
-                    this.ConnectBtn.Text = "Connect";
-
-                    showDisconnectPopup();
-                }
-                else
-                    this.ConnectBtn.Text = "Unknown ERROR";
-
-            }
-            catch (Exception exc)
-            {
-
-                Console.WriteLine("failed to connect..." + exc.Message);
-            }
-        }
+        
 
         private static void showDisconnectPopup()
         {
@@ -114,18 +54,17 @@ namespace Client_App
             this.SignUpBtn.BackColor = Constants.Inactive;
             this.ConnectionLabel.Text = "Not Connected";
             this.ConnectionLabel.ForeColor = Color.Red;
-            this.ConnectBtn.Enabled = true;
-            this.label7.Text = "Bye Bye!";
-            ConnectBtn.BackColor = Constants.ConnectBtnActive;
         }
 
         private void SignUpBtn_Click(object sender, EventArgs e)
         {
-            connection = new connectionToServer();
-            string hostAddress = this.IPAddressTB.Text;
-            if (hostAddress == "this" || hostAddress == "localhost")
-                connection.client = new TcpClient(Dns.GetHostName(), int.Parse(this.PortTB.Text));
-            connection.networkStream = connection.client.GetStream();
+            if (!startedConnection)
+            {
+                startedConnection = true;
+                connection = new connectionToServer();
+                connection.client = new TcpClient(Dns.GetHostName(), connection.port);
+                connection.networkStream = connection.client.GetStream();
+            }
             BinaryFormatter formatter = new BinaryFormatter();
 
             ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
@@ -138,7 +77,6 @@ namespace Client_App
 
             StreamReader streamReader = new StreamReader(connection.networkStream);
             string responseFromServer = streamReader.ReadLine();
-            this.label7.Text = responseFromServer;
             if (responseFromServer != "Username already taken")
                 showSignUpPopUp();
             else
@@ -168,14 +106,16 @@ namespace Client_App
         {
             try
             {
-                connection = new connectionToServer();
-                string hostAddress = this.IPAddressTB.Text;
-                if (hostAddress == "this" || hostAddress == "localhost")
-                    connection.client = new TcpClient(Dns.GetHostName(), int.Parse(this.PortTB.Text));
-                connection.networkStream = connection.client.GetStream();
+                if (!startedConnection)
+                {
+                    startedConnection = true;
+                    connection = new connectionToServer();
+                    connection.client = new TcpClient(Dns.GetHostName(), connection.port);
+                    connection.networkStream = connection.client.GetStream();
+                }
                 BinaryFormatter formatter = new BinaryFormatter();
                 //TcpClient client = new TcpClient(Dns.GetHostName(), 1302);
-                
+
 
                 //NetworkStream networkStream = client.GetStream();
 
@@ -211,11 +151,13 @@ namespace Client_App
 
             if (this.LoginBtn.Text == "Login")
             {
-                connection = new connectionToServer();
-                string hostAddress = this.IPAddressTB.Text;
-                //if (hostAddress == "this" || hostAddress == "localhost")
-                connection.client = new TcpClient(Dns.GetHostName(), 1302);
-                connection.networkStream = connection.client.GetStream();
+                if (!startedConnection)
+                {
+                    startedConnection = true;
+                    connection = new connectionToServer();
+                    connection.client = new TcpClient(Dns.GetHostName(), connection.port);
+                    connection.networkStream = connection.client.GetStream();
+                }
 
                 ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
                 generateLoginMessage(messageToSend);
@@ -224,27 +166,33 @@ namespace Client_App
                 formatter.Serialize(connection.networkStream, messageToSend);
                 connection.networkStream.Flush();
 
-                StreamReader streamReader = new StreamReader(connection.networkStream);
-                string responseFromServer = streamReader.ReadLine();
-                this.label7.Text = responseFromServer;
-                if (responseFromServer == "Logged In!")
+                ChatAppClasses.Message messageFromServer;
+                messageFromServer = (ChatAppClasses.Message)formatter.Deserialize(connection.networkStream);
+
+                string responseFromServer = messageFromServer.MessageText;
+                switch (responseFromServer)
                 {
-                    ActivateUserInterface_login();
-                    showLoginPopup();
-                }
-                else if (responseFromServer == "Welcome, Admin!")
-                {
-                    adminApp.Show();
-                    ActivateUserInterface_login();
-                    ActivateAdminInterface_login();
-                    showWelcomeAdminPopup();
-                }
-                else if (responseFromServer == "Wrong Credentials!")
-                {
-                    Popup popup = new Popup();
-                    popup.BackColor = Constants.WrongCredentialsPopupColor;
-                    popup.message.Text = "wrong Credentials!";
-                    popup.Show();
+                    case "Logged In!":
+                        ActivateUserInterface_login();
+                        showLoginPopup();
+                        break;
+                    case "Welcome, Admin!":
+                        adminApp.Show();
+                        ActivateUserInterface_login();
+                        ActivateAdminInterface_login();
+                        showWelcomeAdminPopup();
+                        break;
+                    case "Wrong Credentials!":
+                        {
+                            Popup popup = new Popup();
+                            popup.BackColor = Constants.WrongCredentialsPopupColor;
+                            popup.message.Text = "wrong Credentials!";
+                            popup.Show();
+                            break;
+                        }
+                    case "Logged out!":
+
+                        break;
                 }
                 Console.WriteLine("Am ajuns aici");
                 //connection.networkStream.Close();
@@ -253,8 +201,22 @@ namespace Client_App
             else if (LoginBtn.Text == "Logout")
             {
                 adminApp.Visible = false;
+                
+                ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
+                messageToSend.Type = "Logout";
+                IFormatter formatter = new BinaryFormatter();
+                
+                formatter.Serialize(connection.networkStream, messageToSend);
+                connection.networkStream.Flush();
+
+                ChatAppClasses.Message messageFromServer;
+                messageFromServer = (ChatAppClasses.Message)formatter.Deserialize(connection.networkStream);
+
+                if(messageFromServer.MessageText == "Logged Out!")
+                {
                 doLogout();
                 showLogoutPopup();
+                }
             }
             else
             {
@@ -291,11 +253,11 @@ namespace Client_App
         {
             LogoutActivations();
             LogoutDeactivations();
+            startedConnection = false;
             this.LoginBtn.Text = "Login";
             this.LoginBtn.BackColor = Constants.LoginBtnActive;
             this.UsernameTB.Text = String.Empty;
             this.PasswordTB.Text = String.Empty;
-            this.label7.Text = "Logged Out Successfully!";
 
         }
 
@@ -333,7 +295,6 @@ namespace Client_App
         }
         private void ActivateConnectionInterface()
         {
-            this.label7.Text = "Now You can Log In!";
             this.ConnectionLabel.ForeColor = Color.Green;
             this.LoginBtn.Enabled = true;
             this.LoginBtn.BackColor = Constants.LoginBtnActive;
@@ -404,6 +365,16 @@ namespace Client_App
 
         }
 
+        //internal static void updateSettings(string IP, int port)
+        //{
+        //    connection.port = port;
+        //    connection.IPAddress = IP;
+        //}
 
+        private void button1_Click_2(object sender, EventArgs e)
+        {
+            SettingForm settingForm = new SettingForm();
+            settingForm.Show();
+        }
     }
 }

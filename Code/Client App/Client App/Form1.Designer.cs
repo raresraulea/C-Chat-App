@@ -145,7 +145,6 @@
             // SignUpBtn
             // 
             this.SignUpBtn.BackColor = System.Drawing.Color.LightGray;
-            this.SignUpBtn.Enabled = false;
             this.SignUpBtn.Font = new System.Drawing.Font("Verdana", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SignUpBtn.ForeColor = System.Drawing.SystemColors.InactiveBorder;
             this.SignUpBtn.Location = new System.Drawing.Point(630, 141);
@@ -234,7 +233,6 @@
             // UsernameTB
             // 
             this.UsernameTB.BackColor = System.Drawing.Color.LightGray;
-            this.UsernameTB.Enabled = false;
             this.UsernameTB.Location = new System.Drawing.Point(136, 136);
             this.UsernameTB.Name = "UsernameTB";
             this.UsernameTB.Size = new System.Drawing.Size(262, 22);
@@ -243,7 +241,6 @@
             // PasswordTB
             // 
             this.PasswordTB.BackColor = System.Drawing.Color.LightGray;
-            this.PasswordTB.Enabled = false;
             this.PasswordTB.Location = new System.Drawing.Point(136, 180);
             this.PasswordTB.Name = "PasswordTB";
             this.PasswordTB.PasswordChar = '*';

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -28,6 +29,7 @@ namespace Server
         }
         public void run()
         {
+            clientList.Clear();
             TcpListener listener = new TcpListener(System.Net.IPAddress.Any, 1302);
             listener.Start();
             Console.WriteLine("Server started...");
@@ -35,40 +37,22 @@ namespace Server
             while (true)
             {
                 Console.WriteLine("Waiting for connection...");
-                TcpClient client = acceptConnectionToClient(listener);
 
+                TcpClient client = acceptConnectionToClient(listener);
                 NetworkStream networkStream = client.GetStream();
-                StreamReader streamReader = new StreamReader(client.GetStream());
-                StreamWriter streamWriter = new StreamWriter(client.GetStream());
-                IFormatter formatter = new BinaryFormatter();
 
                 try
                 {
 
                     byte[] buffer = new byte[1024];
-                    //networkStream.Read(buffer);
-                    ChatAppClasses.Message messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(networkStream);
-                    string username = messageFromClient.username;
-                    //Message messageFromClient = new Message();
-                    //messageFromClient.setText(Encoding.UTF8.GetString(buffer));
-                    if (messageFromClient.Type == "Login")
-                        Console.WriteLine(messageFromClient.username + " " + messageFromClient.password);
 
-                    //string response = handleIncomingMessage(messageFromClient);
+                    if (!clientList.ContainsValue(client))
+                    {
+                        clientList.Add(client.ToString(), client);
+                        var thread = new Thread(() => handleIncomingMessage(client));
+                        thread.Start();
+                    }
 
-                    //networkStream.Write(Encoding.ASCII.GetBytes(response));
-                    /* add to dictionary, listbox and send userList  */
-                    if(!clientList.ContainsKey(username))
-                        clientList.Add(username, client);
-                    //announce(username + " Joined ", username, false);
-
-                    ////await Task.Delay(1000).ContinueWith(t => sendUsersList());
-                    //streamWriter.Flush();
-                    //streamWriter.Close();
-
-                    //var c = new Thread(() => ServerReceive(client, username));
-                    var c = new Thread(() => handleIncomingMessage(client, messageFromClient));
-                    c.Start();
                 }
                 catch (Exception e)
                 {
@@ -77,6 +61,69 @@ namespace Server
                 }
             }
         }
+        public void handleIncomingMessage(TcpClient client)
+        {
+            NetworkStream stream;
+            Console.WriteLine("tratez " + client.ToString());
+            //if (messageFromClient.Type == "Login" && serverDatabase.checkCredentials(messageFromClient.username, messageFromClient.password))
+            //    return "Logged In!";
+            IFormatter formatter = new BinaryFormatter();
+            while (true)
+            {
+                try
+                {
+                    stream = client.GetStream();
+                    StreamWriter streamWriter = new StreamWriter(stream);
+                    ChatAppClasses.Message messageFromClient;
+                    messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(stream);
+                    Console.WriteLine("The message from the client is: " + messageFromClient.MessageText);
+                    string response;
+                    switch (messageFromClient.Type)
+                    {
+                        case "Connection":
+                            response = "Connected";
+                            break;
+                        case "Message":
+                            response = "Message handled!";
+                            break;
+                        case "Login":
+                            User user = new User();
+                            user.username = messageFromClient.username;
+                            user.password = messageFromClient.password;
+                            response = handleLogin(user);
+                            break;
+                        case "SignUp":
+                            response = handleSignUp(new User() { username = messageFromClient.username, password = messageFromClient.password });
+                            break;
+
+                        default:
+                            response = "Error";
+                            break;
+                    }
+                    Console.WriteLine(response);
+                    byte[] outStream = Encoding.ASCII.GetBytes(response);
+                    streamWriter.Write(response);
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                    //stream.Close();
+                    //client.Connect(Dns.GetHostName(), 1302);
+                    Server_class.serverDatabase.saveMessageToDb(messageFromClient);
+                    //Console.WriteLine("am ex o data");
+                    //Thread.Sleep(100);
+                    Console.WriteLine("Am tratat " + client.ToString());
+                }
+                catch (Exception e)
+                {
+
+                    Console.WriteLine("Reading error: " + e.Message);
+                }
+
+
+            }
+            stream.Close();
+            Console.WriteLine("Am iesit de aici");
+
+        }
         public void ServerReceive(TcpClient clientn, string username)
         {
             byte[] data = new byte[1000];
@@ -84,26 +131,26 @@ namespace Server
             //Console.WriteLine(username);
             while (true)
             {
-               
-                    NetworkStream stream = clientn.GetStream(); //Gets The Stream of The Connection
-                    Console.WriteLine(username);
-                    stream.Read(data, 0, data.Length); //Receives Data 
-                    List<string> parts = (List<string>)ByteArrayToObject(data);
-                    Console.WriteLine(parts[0]);
-                    switch (parts[0])
-                    {
-                        case "Connection Request":
-                            Console.WriteLine("Connection Request");
-                            announce("Connection Request", username, true);
-                            break;
 
-                        case "pChat":
-                            Console.WriteLine("pChat");
-                            break;
-                    }
+                NetworkStream stream = clientn.GetStream(); //Gets The Stream of The Connection
+                Console.WriteLine(username);
+                stream.Read(data, 0, data.Length); //Receives Data 
+                List<string> parts = (List<string>)ByteArrayToObject(data);
+                Console.WriteLine(parts[0]);
+                switch (parts[0])
+                {
+                    case "Connection Request":
+                        Console.WriteLine("Connection Request");
+                        announce("Connection Request", username, true);
+                        break;
 
-                    parts.Clear();
-               
+                    case "pChat":
+                        Console.WriteLine("pChat");
+                        break;
+                }
+
+                parts.Clear();
+
             }
         }
         public object ByteArrayToObject(byte[] arrBytes)
@@ -221,44 +268,7 @@ namespace Server
         {
 
         }
-        public void handleIncomingMessage(TcpClient client, ChatAppClasses.Message messageFromClient)
-        {
-            Console.WriteLine("The message from the client is: " + messageFromClient.MessageText);
-            //if (messageFromClient.Type == "Login" && serverDatabase.checkCredentials(messageFromClient.username, messageFromClient.password))
-            //    return "Logged In!";
-            string response;
-            switch (messageFromClient.Type)
-            {
-                case "Connection":
-                    response = "Connected";
-                    break;
-                case "Message":
-                    response =  "Message handled!";
-                    break;
-                case "Login":
-                    User user = new User();
-                    user.username = messageFromClient.username;
-                    user.password = messageFromClient.password;
-                    //new User() { username = messageFromClient.username, password = messageFromClient.password }
-                    response = handleLogin(user);
-                    break;
-                case "SignUp":
-                    response = handleSignUp(new User() { username = messageFromClient.username, password = messageFromClient.password });
-                    break;
 
-                default:
-                    response = "Error";
-                    break;
-            }
-            Console.WriteLine(response);
-            NetworkStream stream = client.GetStream();
-            stream.Write(Encoding.ASCII.GetBytes(response));
-            stream.Flush();
-            stream.Close();
-            Server_class.serverDatabase.saveMessageToDb(messageFromClient);
-            
-
-        }
         public void sendPrivateMessage()
         {
 

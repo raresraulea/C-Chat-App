@@ -185,7 +185,7 @@ namespace Client_App
                 messageToSend.username = "standard";
                 formatter.Serialize(connection.networkStream, messageToSend);
                 this.messageBox.Text = "";
-
+                //Thread.Sleep(50);
                 //int byteCount = Encoding.ASCII.GetByteCount(messageToSend);
                 //byte[] sendData = new byte[byteCount + 1];
                 //sendData = Encoding.ASCII.GetBytes(messageToSend);
@@ -213,8 +213,8 @@ namespace Client_App
             {
                 connection = new connectionToServer();
                 string hostAddress = this.IPAddressTB.Text;
-                if (hostAddress == "this" || hostAddress == "localhost")
-                    connection.client = new TcpClient(Dns.GetHostName(), int.Parse(this.PortTB.Text));
+                //if (hostAddress == "this" || hostAddress == "localhost")
+                connection.client = new TcpClient(Dns.GetHostName(), 1302);
                 connection.networkStream = connection.client.GetStream();
 
                 ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
@@ -222,6 +222,7 @@ namespace Client_App
 
                 BinaryFormatter formatter = new BinaryFormatter();
                 formatter.Serialize(connection.networkStream, messageToSend);
+                connection.networkStream.Flush();
 
                 StreamReader streamReader = new StreamReader(connection.networkStream);
                 string responseFromServer = streamReader.ReadLine();
@@ -245,8 +246,9 @@ namespace Client_App
                     popup.message.Text = "wrong Credentials!";
                     popup.Show();
                 }
-                connection.networkStream.Close();
-                connection.client.Close();
+                Console.WriteLine("Am ajuns aici");
+                //connection.networkStream.Close();
+                //connection.client.Close();
             }
             else if (LoginBtn.Text == "Logout")
             {

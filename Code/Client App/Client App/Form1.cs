@@ -22,6 +22,11 @@ namespace Client_App
         private connectionToServer connection;
         AdminForm adminApp = new AdminForm();
         bool startedConnection = false;
+        bool loggedIn = false;
+        delegate void UserUpdateCallback(string text);
+        
+        public delegate void LoginUI();
+        public LoginUI LoginUIDelegate;
 
         public Form1()
         {
@@ -30,8 +35,10 @@ namespace Client_App
             User clientUser = new User();
             clientUser.IP = hostIP.ToString();
 
+            LoginUIDelegate = new LoginUI(ActivateUserInterface_login);
+
         }
-        
+
         private static void showDisconnectPopup()
         {
             Popup popup = new Popup();
@@ -113,7 +120,7 @@ namespace Client_App
                     connection.networkStream = connection.client.GetStream();
                 }
                 BinaryFormatter formatter = new BinaryFormatter();
-                
+
 
                 ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
                 messageToSend.MessageText = this.messageBox.Text;
@@ -137,7 +144,7 @@ namespace Client_App
         }
         private void LoginBtn_Click(object sender, EventArgs e)
         {
-
+            loggedIn = true;
             if (this.LoginBtn.Text == "Login")
             {
                 if (!startedConnection)
@@ -155,14 +162,44 @@ namespace Client_App
                 formatter.Serialize(connection.networkStream, messageToSend);
                 connection.networkStream.Flush();
 
-                List<string> clientList;
-                clientList = (List<string>)formatter.Deserialize(connection.networkStream);
+                Thread loginThread = new Thread(() => listenLoggedIn());
+                loginThread.Start();
+                return;
+            }
+            else if (LoginBtn.Text == "Logout")
+            {
+                loggedIn = false;
+                adminApp.Visible = false;
 
-                foreach(var item in clientList)
+                ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
+                messageToSend.Type = "Logout";
+                IFormatter formatter = new BinaryFormatter();
+
+                formatter.Serialize(connection.networkStream, messageToSend);
+                connection.networkStream.Flush();
+
+                ChatAppClasses.Message messageFromServer;
+                messageFromServer = (ChatAppClasses.Message)formatter.Deserialize(connection.networkStream);
+
+                if (messageFromServer.MessageText == "Logged Out!")
                 {
-                    this.onlineUsersLV.Items.Add(item);
+                    doLogout();
+                    showLogoutPopup();
                 }
+            }
+            else
+            {
+                LoginBtn.Text = "Unknown ERROR";
+            }
 
+        }
+        
+        private void listenLoggedIn()
+        {
+            Console.WriteLine("Listen Thread started: Logged In");
+            BinaryFormatter formatter = new BinaryFormatter();
+            while (loggedIn)
+            {
                 ChatAppClasses.Message messageFromServer;
                 messageFromServer = (ChatAppClasses.Message)formatter.Deserialize(connection.networkStream);
 
@@ -170,8 +207,10 @@ namespace Client_App
                 switch (responseFromServer)
                 {
                     case "Logged In!":
-                        ActivateUserInterface_login();
-                        showLoginPopup();
+                        MyThreadClass myThreadClassObject = new MyThreadClass(this);
+                        myThreadClassObject.Run();
+                        //ActivateUserInterface_login();
+                        //showLoginPopup();
                         break;
                     case "Welcome, Admin!":
                         adminApp.Show();
@@ -188,39 +227,41 @@ namespace Client_App
                             break;
                         }
                     case "Logged out!":
-
                         break;
                 }
-                Console.WriteLine("Am ajuns aici");
-                //connection.networkStream.Close();
-                //connection.client.Close();
+
+                updateOnlineUsers(messageFromServer);
+
             }
-            else if (LoginBtn.Text == "Logout")
+            Console.WriteLine("Listen Thread stopped: Logged Out");
+        }
+        private void UpdateUsers(string user)
+        {
+            // InvokeRequired required compares the thread ID of the
+            // calling thread to the thread ID of the creating thread.
+            // If these threads are different, it returns true.
+            if (this.onlineUsersLV.InvokeRequired)
             {
-                adminApp.Visible = false;
-                
-                ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
-                messageToSend.Type = "Logout";
-                IFormatter formatter = new BinaryFormatter();
-                
-                formatter.Serialize(connection.networkStream, messageToSend);
-                connection.networkStream.Flush();
-
-                ChatAppClasses.Message messageFromServer;
-                messageFromServer = (ChatAppClasses.Message)formatter.Deserialize(connection.networkStream);
-
-                if(messageFromServer.MessageText == "Logged Out!")
-                {
-                doLogout();
-                showLogoutPopup();
-                }
+                UserUpdateCallback userUpdate = new UserUpdateCallback(UpdateUsers);
+                this.Invoke(userUpdate, new object[] { user });
             }
             else
             {
-                LoginBtn.Text = "Unknown ERROR";
+                this.onlineUsersLV.Items.Add(user);
             }
-
         }
+        private void updateOnlineUsers(ChatAppClasses.Message messageFromServer)
+        {
+            if (messageFromServer.Type == "List")
+            {
+                this.onlineUsersLV.Clear();
+                foreach (var user in messageFromServer.onlineUser)
+                {
+                    UpdateUsers(user);
+                }
+            }
+        }
+
         private void doLogout()
         {
             LogoutActivations();
@@ -258,7 +299,7 @@ namespace Client_App
             popup.Show();
         }
 
-        
+
 
         private void LogoutDeactivations()
         {

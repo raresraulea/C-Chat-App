@@ -16,6 +16,7 @@ namespace ChatAppClasses
         private string sender;
         private string receiver;
         private string messageText;
+        public List<string> onlineUser = new List<string>();
 
         public Message()
         {

@@ -105,6 +105,7 @@
     <Compile Include="AdminForm.Designer.cs">
       <DependentUpon>AdminForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MyThreadClass.cs" />
     <Compile Include="Popup.cs">
       <SubType>Form</SubType>
     </Compile>

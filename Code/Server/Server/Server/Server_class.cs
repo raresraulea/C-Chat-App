@@ -77,8 +77,8 @@ namespace Server
                 clientList.Add(messageFromClient.username, client);
                 clientID++;
             }
-            
-                var clientInDictionary = clientList.First(dictionaryItem => dictionaryItem.Value == client);
+
+            var clientInDictionary = clientList.First(dictionaryItem => dictionaryItem.Value == client);
             Console.WriteLine("Handling " + clientInDictionary.Key);
 
             while (true)
@@ -168,15 +168,18 @@ namespace Server
         {
             List<string> list = new List<string>();
 
-            foreach(var client in clientList)
+            foreach (var client in clientList)
             {
                 list.Add(client.Key);
             }
+            ChatAppClasses.Message onlineUsersList = new ChatAppClasses.Message();
+            onlineUsersList.Type = "List";
+            onlineUsersList.onlineUser = list;
             foreach (var client in clientList)
             {
                 var stream = client.Value.GetStream();
                 IFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(stream, list);
+                formatter.Serialize(stream, onlineUsersList);
                 stream.Flush();
             }
         }

@@ -78,14 +78,15 @@ namespace Server
                 clientID++;
             }
 
-            var clientInDictionary = clientList.First(dictionaryItem => dictionaryItem.Value == client);
+            KeyValuePair<string, TcpClient> clientInDictionary;
+            clientInDictionary = clientList.First(dictionaryItem => dictionaryItem.Value == client);
             Console.WriteLine("Handling " + clientInDictionary.Key);
+
 
             while (true)
             {
                 try
                 {
-
                     stream = client.GetStream();
                     StreamWriter streamWriter = new StreamWriter(stream);
                     Console.WriteLine("inainte");
@@ -126,15 +127,14 @@ namespace Server
                             break;
                         case "SignUp":
                             response = handleSignUp(new User() { username = messageFromClient.username, password = messageFromClient.password });
+                            var clientToRemove = clientList.First(dictionaryItem => dictionaryItem.Value == client);
+                            clientList.Remove(clientToRemove.Key);
                             break;
 
                         default:
                             response = "Error";
                             break;
                     }
-
-                    //foreach (var clientActual in clientList)
-                    //    Console.WriteLine(clientActual.Key);
 
                     Console.WriteLine("The response sent by the server: " + response);
 
@@ -143,10 +143,16 @@ namespace Server
 
                     formatter.Serialize(stream, messageToSend);
                     stream.Flush();
-
+                    if (response == "Wrong Credentials!")
+                    {
+                        Thread.Sleep(300);
+                        var clientToRemove = clientList.First(dictionaryItem => dictionaryItem.Value == client);
+                        clientList.Remove(clientToRemove.Key);
+                        break;
+                    }
                     if (messageFromClient.Type == "Message")
                         Server_class.serverDatabase.saveMessageToDb(messageFromClient);
-                    if (messageFromClient.Type == "Logout")
+                    if (messageFromClient.Type == "Logout" || messageFromClient.Type == "SignUp")
                         break;
 
                     Console.WriteLine("Finished handling for: " + clientInDictionary.Key);
@@ -159,7 +165,7 @@ namespace Server
 
 
             }
-            stream.Close();
+            //stream.Close();
             Console.WriteLine("Thread terminated through Logout!");
 
         }

@@ -39,8 +39,6 @@ namespace ChatAppClasses
         public string Receiver { get => receiver; set => receiver = value; }
         public string Sender { get => sender; set => sender = value; }
         public string Type { get => type; set => type = value; }
-        //public string Username { get => username; set => username = value; }
-        //public string Password { get => password; set => password = value; }
 
         public void setText(string text)
         {

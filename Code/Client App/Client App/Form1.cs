@@ -101,16 +101,17 @@ namespace Client_App
             messageToSend.password = PasswordTB.Text.ToString();
 
             formatter.Serialize(connection.networkStream, messageToSend);
+            connection.networkStream.Flush();
 
-            StreamReader streamReader = new StreamReader(connection.networkStream);
-            string responseFromServer = streamReader.ReadLine();
-            if (responseFromServer != "Username already taken")
+            ChatAppClasses.Message messageFromServer;
+            messageFromServer = (ChatAppClasses.Message)formatter.Deserialize(connection.networkStream);
+            if (messageFromServer.MessageText != "Username already taken")
                 showSignUpPopUp();
             else
                 showRetrySignUpPopup();
 
-            connection.networkStream.Close();
-            connection.client.Close();
+            startedConnection = false;
+
         }
 
         private void showRetrySignUpPopup()
@@ -190,8 +191,6 @@ namespace Client_App
             }
             else if (LoginBtn.Text == "Logout")
             {
-                loginThread.Join();
-                loginThread.Abort();
                 loggedIn = false;
                 adminApp.Visible = false;
 
@@ -233,24 +232,18 @@ namespace Client_App
                 {
                     case "Logged In!":
                         myThreadClassObject.Run("LoginUI");
-                        myThreadClassObject.Run("LoginPopup");
-                        //ActivateUserInterface_login();
-                        //showLoginPopup();
+               myThreadClassObject.Run("LoginPopup");
                         break;
                     case "Welcome, Admin!":
                         myThreadClassObject.Run("LoginUI");
                         myThreadClassObject.Run("AdminUI");
                         myThreadClassObject.Run("WelcomeAdminPopup");
-                        //ActivateUserInterface_login();
-                        //ActivateAdminInterface_login();
-                        //showWelcomeAdminPopup();
                         break;
                     case "Wrong Credentials!":
-                        {
-                            myThreadClassObject.Run("WrongCredentialsPopup");
-                            //showWrongCredentialsPopup();
-                            break;
-                        }
+                        myThreadClassObject.Run("WrongCredentialsPopup");
+                        loggedIn = false;
+                        startedConnection = false;
+                        break;
                     case "Logged out!":
                         break;
                 }

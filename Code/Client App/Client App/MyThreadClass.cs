@@ -13,12 +13,31 @@ namespace Client_App
         {
             myFormControl1 = myForm;
         }
-
-        public void Run()
+        
+        public void Run(string delegateType)
         {
-            // Execute the specified delegate on the thread that owns
-            // 'myFormControl1' control's underlying window handle.
-            myFormControl1.Invoke(myFormControl1.LoginUIDelegate);
+            switch (delegateType)
+            {
+                case "LoginUI":
+                    myFormControl1.Invoke(myFormControl1.LoginUIDelegate);
+                    break;
+                case "LoginPopup":
+                    myFormControl1.Invoke(myFormControl1.LoginPopupDelegate);
+                    break;
+                case "AdminUI":
+                    myFormControl1.Invoke(myFormControl1.AdminUIDelegate);
+                    break;
+                case "WelcomeAdminPopup":
+                    myFormControl1.Invoke(myFormControl1.WelcomeAdminPopupDelegate);
+                    break;
+                case "WrongCredentialsPopup":
+                    myFormControl1.Invoke(myFormControl1.WrongCredentialsPopupDelegate);
+                    break;
+                case "ClearUsersListView":
+                    myFormControl1.Invoke(myFormControl1.ClearUsersListViewDelegate);
+                    break;
+            }
+            
         }
     }
 }

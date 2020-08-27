@@ -24,9 +24,24 @@ namespace Client_App
         bool startedConnection = false;
         bool loggedIn = false;
         delegate void UserUpdateCallback(string text);
-        
+
         public delegate void LoginUI();
         public LoginUI LoginUIDelegate;
+
+        public delegate void LoginPopup();
+        public LoginPopup LoginPopupDelegate;
+
+        public delegate void AdminUI();
+        public AdminUI AdminUIDelegate;
+
+        public delegate void WelcomeAdmin();
+        public WelcomeAdmin WelcomeAdminPopupDelegate;
+
+        public delegate void WrongCredentialsPopup();
+        public WrongCredentialsPopup WrongCredentialsPopupDelegate;
+
+        public delegate void ClearUsersListView();
+        public ClearUsersListView ClearUsersListViewDelegate;
 
         public Form1()
         {
@@ -36,6 +51,12 @@ namespace Client_App
             clientUser.IP = hostIP.ToString();
 
             LoginUIDelegate = new LoginUI(ActivateUserInterface_login);
+            LoginPopupDelegate = new LoginPopup(showLoginPopup);
+            AdminUIDelegate = new AdminUI(ActivateAdminInterface_login);
+            WelcomeAdminPopupDelegate = new WelcomeAdmin(showWelcomeAdminPopup);
+            WrongCredentialsPopupDelegate = new WrongCredentialsPopup(showWrongCredentialsPopup);
+            ClearUsersListViewDelegate = new ClearUsersListView(clearUsersListView);
+
 
         }
 
@@ -145,6 +166,7 @@ namespace Client_App
         private void LoginBtn_Click(object sender, EventArgs e)
         {
             loggedIn = true;
+            Thread loginThread = new Thread(() => listenLoggedIn());
             if (this.LoginBtn.Text == "Login")
             {
                 if (!startedConnection)
@@ -162,12 +184,14 @@ namespace Client_App
                 formatter.Serialize(connection.networkStream, messageToSend);
                 connection.networkStream.Flush();
 
-                Thread loginThread = new Thread(() => listenLoggedIn());
+
                 loginThread.Start();
                 return;
             }
             else if (LoginBtn.Text == "Logout")
             {
+                loginThread.Join();
+                loginThread.Abort();
                 loggedIn = false;
                 adminApp.Visible = false;
 
@@ -193,7 +217,7 @@ namespace Client_App
             }
 
         }
-        
+
         private void listenLoggedIn()
         {
             Console.WriteLine("Listen Thread started: Logged In");
@@ -203,27 +227,28 @@ namespace Client_App
                 ChatAppClasses.Message messageFromServer;
                 messageFromServer = (ChatAppClasses.Message)formatter.Deserialize(connection.networkStream);
 
+                MyThreadClass myThreadClassObject = new MyThreadClass(this);
                 string responseFromServer = messageFromServer.MessageText;
                 switch (responseFromServer)
                 {
                     case "Logged In!":
-                        MyThreadClass myThreadClassObject = new MyThreadClass(this);
-                        myThreadClassObject.Run();
+                        myThreadClassObject.Run("LoginUI");
+                        myThreadClassObject.Run("LoginPopup");
                         //ActivateUserInterface_login();
                         //showLoginPopup();
                         break;
                     case "Welcome, Admin!":
-                        adminApp.Show();
-                        ActivateUserInterface_login();
-                        ActivateAdminInterface_login();
-                        showWelcomeAdminPopup();
+                        myThreadClassObject.Run("LoginUI");
+                        myThreadClassObject.Run("AdminUI");
+                        myThreadClassObject.Run("WelcomeAdminPopup");
+                        //ActivateUserInterface_login();
+                        //ActivateAdminInterface_login();
+                        //showWelcomeAdminPopup();
                         break;
                     case "Wrong Credentials!":
                         {
-                            Popup popup = new Popup();
-                            popup.BackColor = Constants.WrongCredentialsPopupColor;
-                            popup.message.Text = "wrong Credentials!";
-                            popup.Show();
+                            myThreadClassObject.Run("WrongCredentialsPopup");
+                            //showWrongCredentialsPopup();
                             break;
                         }
                     case "Logged out!":
@@ -235,6 +260,15 @@ namespace Client_App
             }
             Console.WriteLine("Listen Thread stopped: Logged Out");
         }
+
+        private static void showWrongCredentialsPopup()
+        {
+            Popup popup = new Popup();
+            popup.BackColor = Constants.WrongCredentialsPopupColor;
+            popup.message.Text = "wrong Credentials!";
+            popup.Show();
+        }
+
         private void UpdateUsers(string user)
         {
             // InvokeRequired required compares the thread ID of the
@@ -254,12 +288,18 @@ namespace Client_App
         {
             if (messageFromServer.Type == "List")
             {
-                this.onlineUsersLV.Clear();
+                MyThreadClass myThreadClassObject = new MyThreadClass(this);
+                myThreadClassObject.Run("ClearUsersListView");
                 foreach (var user in messageFromServer.onlineUser)
                 {
                     UpdateUsers(user);
                 }
             }
+        }
+
+        private void clearUsersListView()
+        {
+            this.onlineUsersLV.Clear();
         }
 
         private void doLogout()
@@ -348,6 +388,7 @@ namespace Client_App
         }
         private void ActivateAdminInterface_login()
         {
+            adminApp.Show();
             this.UsernameTB.Enabled = false;
             this.UsernameTB.BackColor = Constants.Inactive;
 

@@ -15,11 +15,9 @@ namespace Server
     public class Server_class
     {
         public static Database serverDatabase;
-        public static List<User> onlineUsers = new List<User>();
 
         Dictionary<string, TcpClient> clientList = new Dictionary<string, TcpClient>();
         CancellationTokenSource cancellation = new CancellationTokenSource();
-        List<string> chat = new List<string>();
         static int clientID = 1;
 
         public void connectToDatabase(Database database)
@@ -30,7 +28,6 @@ namespace Server
         public void run()
         {
             clientList.Clear();
-            onlineUsers.Clear();
 
             TcpListener listener = new TcpListener(System.Net.IPAddress.Any, 1302);
             listener.Start();
@@ -89,16 +86,13 @@ namespace Server
                 {
                     stream = client.GetStream();
                     StreamWriter streamWriter = new StreamWriter(stream);
-                    Console.WriteLine("inainte");
 
                     if (!flag_first)
                     {
                         messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(stream);
-                        Console.WriteLine("Update MEssage" + messageFromClient.Type);
+                        Console.WriteLine("Update Message" + messageFromClient.Type);
 
                     }
-                    //Console.WriteLine("The message from the client is: " + messageFromClient.MessageText);
-
 
                     string response;
                     switch (messageFromClient.Type)
@@ -143,6 +137,7 @@ namespace Server
 
                     formatter.Serialize(stream, messageToSend);
                     stream.Flush();
+                    
                     if (response == "Wrong Credentials!")
                     {
                         Thread.Sleep(300);
@@ -190,88 +185,7 @@ namespace Server
             }
         }
 
-        public void ServerReceive(TcpClient clientn, string username)
-        {
-            byte[] data = new byte[1000];
-            string text = null;
-            while (true)
-            {
-
-                NetworkStream stream = clientn.GetStream(); //Gets The Stream of The Connection
-                Console.WriteLine(username);
-                stream.Read(data, 0, data.Length); //Receives Data 
-                List<string> parts = (List<string>)ByteArrayToObject(data);
-                Console.WriteLine(parts[0]);
-                switch (parts[0])
-                {
-                    case "Connection Request":
-                        Console.WriteLine("Connection Request");
-                        announce("Connection Request", username, true);
-                        break;
-
-                    case "pChat":
-                        Console.WriteLine("pChat");
-                        break;
-                }
-
-                parts.Clear();
-
-            }
-        }
-        public object ByteArrayToObject(byte[] arrBytes)
-        {
-            using (var memStream = new MemoryStream())
-            {
-                var binForm = new BinaryFormatter();
-                memStream.Write(arrBytes, 0, arrBytes.Length);
-                memStream.Seek(0, SeekOrigin.Begin);
-                var obj = binForm.Deserialize(memStream);
-                return obj;
-            }
-        }
-        public void announce(string msg, string uName, bool flag)
-        {
-            try
-            {
-                foreach (var Item in clientList)
-                {
-                    TcpClient broadcastSocket;
-                    broadcastSocket = (TcpClient)Item.Value;
-                    NetworkStream broadcastStream = broadcastSocket.GetStream();
-                    Byte[] broadcastBytes = null;
-
-                    if (flag)
-                    {
-                        chat.Add("gChat");
-                        chat.Add(uName + " says : " + msg);
-                        broadcastBytes = ObjectToByteArray(chat);
-                    }
-                    else
-                    {
-                        chat.Add("gChat");
-                        chat.Add(msg);
-                        broadcastBytes = ObjectToByteArray(chat);
-                    }
-
-                    broadcastStream.Write(broadcastBytes, 0, broadcastBytes.Length);
-                    broadcastStream.Flush();
-                    chat.Clear();
-                }
-            }
-            catch (Exception er)
-            {
-
-            }
-        }  //end broadcast function
-        public byte[] ObjectToByteArray(Object obj)
-        {
-            BinaryFormatter bf = new BinaryFormatter();
-            using (var ms = new MemoryStream())
-            {
-                bf.Serialize(ms, obj);
-                return ms.ToArray();
-            }
-        }
+        
         internal static void sendClientInvLoginMsg()
         {
             throw new NotImplementedException();
@@ -289,8 +203,6 @@ namespace Server
             Login login = Login.Instance;
 
             string loginResponse = login.verifyLoginData(user);
-            if (loginResponse == "Logged In!" || loginResponse == "Welcome, Admin!")
-                onlineUsers.Add(user);
 
             return loginResponse;
         }
@@ -303,10 +215,6 @@ namespace Server
         {
             SignUp signUp = SignUp.Instance;
             return SignUp.signUp(user);
-
-            //de trimis catre client SignUpResponse
-
-
         }
 
         public static void sendDeleteConfirmationToClient()

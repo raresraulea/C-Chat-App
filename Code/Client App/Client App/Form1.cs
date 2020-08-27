@@ -49,15 +49,18 @@ namespace Client_App
             IPAddress hostIP = Dns.GetHostEntry(Dns.GetHostName()).AddressList[0];
             User clientUser = new User();
             clientUser.IP = hostIP.ToString();
+            Init();
 
+        }
+
+        private void Init()
+        {
             LoginUIDelegate = new LoginUI(ActivateUserInterface_login);
             LoginPopupDelegate = new LoginPopup(showLoginPopup);
             AdminUIDelegate = new AdminUI(ActivateAdminInterface_login);
             WelcomeAdminPopupDelegate = new WelcomeAdmin(showWelcomeAdminPopup);
             WrongCredentialsPopupDelegate = new WrongCredentialsPopup(showWrongCredentialsPopup);
             ClearUsersListViewDelegate = new ClearUsersListView(clearUsersListView);
-
-
         }
 
         private static void showDisconnectPopup()
@@ -228,18 +231,19 @@ namespace Client_App
 
                 MyThreadClass myThreadClassObject = new MyThreadClass(this);
                 string responseFromServer = messageFromServer.MessageText;
+                
                 switch (responseFromServer)
                 {
-                    case "Logged In!":
+                    case Constants.UserLoginSuccessResponse:
                         myThreadClassObject.Run("LoginUI");
-               myThreadClassObject.Run("LoginPopup");
+                        myThreadClassObject.Run("LoginPopup");
                         break;
-                    case "Welcome, Admin!":
+                    case Constants.WelcomeAdminResponse:
                         myThreadClassObject.Run("LoginUI");
                         myThreadClassObject.Run("AdminUI");
                         myThreadClassObject.Run("WelcomeAdminPopup");
                         break;
-                    case "Wrong Credentials!":
+                    case Constants.WrongCredentialsResponse:
                         myThreadClassObject.Run("WrongCredentialsPopup");
                         loggedIn = false;
                         startedConnection = false;

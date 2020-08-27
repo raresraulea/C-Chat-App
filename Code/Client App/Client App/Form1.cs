@@ -32,7 +32,6 @@ namespace Client_App
 
         }
         
-
         private static void showDisconnectPopup()
         {
             Popup popup = new Popup();
@@ -114,10 +113,7 @@ namespace Client_App
                     connection.networkStream = connection.client.GetStream();
                 }
                 BinaryFormatter formatter = new BinaryFormatter();
-                //TcpClient client = new TcpClient(Dns.GetHostName(), 1302);
-
-
-                //NetworkStream networkStream = client.GetStream();
+                
 
                 ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
                 messageToSend.MessageText = this.messageBox.Text;
@@ -125,13 +121,6 @@ namespace Client_App
                 messageToSend.username = "standard";
                 formatter.Serialize(connection.networkStream, messageToSend);
                 this.messageBox.Text = "";
-                //Thread.Sleep(50);
-                //int byteCount = Encoding.ASCII.GetByteCount(messageToSend);
-                //byte[] sendData = new byte[byteCount + 1];
-                //sendData = Encoding.ASCII.GetBytes(messageToSend);
-
-                //networkStream.Write(sendData, 0, sendData.Length);
-                //Console.WriteLine("Sending data to the server...");
 
                 StreamReader streamReader = new StreamReader(connection.networkStream);
                 string responseFromServer = streamReader.ReadLine();
@@ -165,6 +154,14 @@ namespace Client_App
                 BinaryFormatter formatter = new BinaryFormatter();
                 formatter.Serialize(connection.networkStream, messageToSend);
                 connection.networkStream.Flush();
+
+                List<string> clientList;
+                clientList = (List<string>)formatter.Deserialize(connection.networkStream);
+
+                foreach(var item in clientList)
+                {
+                    this.onlineUsersLV.Items.Add(item);
+                }
 
                 ChatAppClasses.Message messageFromServer;
                 messageFromServer = (ChatAppClasses.Message)formatter.Deserialize(connection.networkStream);
@@ -224,7 +221,19 @@ namespace Client_App
             }
 
         }
+        private void doLogout()
+        {
+            LogoutActivations();
+            LogoutDeactivations();
+            startedConnection = false;
+            this.LoginBtn.Text = "Login";
+            this.LoginBtn.BackColor = Constants.LoginBtnActive;
+            this.UsernameTB.Text = String.Empty;
+            this.PasswordTB.Text = String.Empty;
+            this.ConnectionLabel.Text = "Disconnected";
+            this.ConnectionLabel.ForeColor = Color.DarkRed;
 
+        }
         private static void showLogoutPopup()
         {
             Popup popup = new Popup();
@@ -249,17 +258,7 @@ namespace Client_App
             popup.Show();
         }
 
-        private void doLogout()
-        {
-            LogoutActivations();
-            LogoutDeactivations();
-            startedConnection = false;
-            this.LoginBtn.Text = "Login";
-            this.LoginBtn.BackColor = Constants.LoginBtnActive;
-            this.UsernameTB.Text = String.Empty;
-            this.PasswordTB.Text = String.Empty;
-
-        }
+        
 
         private void LogoutDeactivations()
         {
@@ -279,6 +278,7 @@ namespace Client_App
             this.PasswordTB.BackColor = Constants.TBActive;
 
             this.SignUpBtn.Enabled = true;
+            this.SignUpBtn.Visible = true;
             this.SignUpBtn.BackColor = Constants.SignUpBtnActive;
         }
 
@@ -331,6 +331,9 @@ namespace Client_App
 
             this.sendMessageButton.Enabled = true;
             this.sendMessageButton.BackColor = Constants.sendMsgBtnActive;// Color.LightBlue;
+
+            this.ConnectionLabel.Text = "Connected";
+            this.ConnectionLabel.ForeColor = Color.MediumSeaGreen;
         }
         private void messageBox_TextChanged(object sender, EventArgs e)
         {

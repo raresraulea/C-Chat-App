@@ -20,6 +20,7 @@ namespace Server
         Dictionary<string, TcpClient> clientList = new Dictionary<string, TcpClient>();
         CancellationTokenSource cancellation = new CancellationTokenSource();
         List<string> chat = new List<string>();
+        static int clientID = 1;
 
         public void connectToDatabase(Database database)
         {
@@ -49,7 +50,6 @@ namespace Server
 
                     if (!clientList.ContainsValue(client))
                     {
-                        clientList.Add(client.ToString(), client);
                         var thread = new Thread(() => handleIncomingMessage(client));
                         thread.Start();
                     }
@@ -64,9 +64,22 @@ namespace Server
         }
         public void handleIncomingMessage(TcpClient client)
         {
-            NetworkStream stream;
-            Console.WriteLine("tratez " + client.ToString());
+            NetworkStream stream = client.GetStream();
             IFormatter formatter = new BinaryFormatter();
+
+            ChatAppClasses.Message messageFromClient;
+            messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(stream);
+
+            bool flag_first = true;
+
+            if (!clientList.ContainsValue(client))
+            {
+                clientList.Add(messageFromClient.username, client);
+                clientID++;
+            }
+            
+                var clientInDictionary = clientList.First(dictionaryItem => dictionaryItem.Value == client);
+            Console.WriteLine("Handling " + clientInDictionary.Key);
 
             while (true)
             {
@@ -75,11 +88,15 @@ namespace Server
 
                     stream = client.GetStream();
                     StreamWriter streamWriter = new StreamWriter(stream);
+                    Console.WriteLine("inainte");
 
-                    ChatAppClasses.Message messageFromClient;
-                    messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(stream);
+                    if (!flag_first)
+                    {
+                        messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(stream);
+                        Console.WriteLine("Update MEssage" + messageFromClient.Type);
 
-                    Console.WriteLine("The message from the client is: " + messageFromClient.MessageText);
+                    }
+                    //Console.WriteLine("The message from the client is: " + messageFromClient.MessageText);
 
 
                     string response;
@@ -87,6 +104,7 @@ namespace Server
                     {
                         case "Connection":
                             response = "Connected";
+                            flag_first = false;
                             break;
                         case "Message":
                             response = "Message handled!";
@@ -96,11 +114,15 @@ namespace Server
                             user.username = messageFromClient.username;
                             user.password = messageFromClient.password;
                             response = handleLogin(user);
+                            if (response == "Logged In!" || response == "Welcome, Admin!")
+                                sendUsersList();
+                            flag_first = false;
                             break;
                         case "Logout":
                             var clientToBeRemoved = clientList.First(dictionaryItem => dictionaryItem.Value == client);
                             clientList.Remove(clientToBeRemoved.Key);
                             response = "Logged Out!";
+                            sendUsersList();
                             break;
                         case "SignUp":
                             response = handleSignUp(new User() { username = messageFromClient.username, password = messageFromClient.password });
@@ -111,7 +133,10 @@ namespace Server
                             break;
                     }
 
-                    Console.WriteLine(response);
+                    //foreach (var clientActual in clientList)
+                    //    Console.WriteLine(clientActual.Key);
+
+                    Console.WriteLine("The response sent by the server: " + response);
 
                     ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
                     messageToSend.MessageText = response;
@@ -119,19 +144,12 @@ namespace Server
                     formatter.Serialize(stream, messageToSend);
                     stream.Flush();
 
-                    //byte[] outStream = Encoding.ASCII.GetBytes(response);
-                    //stream.Write(outStream, 0, outStream.Length);
-                    //stream.Flush();
-                    //stream.Close();
-
-                    //if(!client.Connected)
-                    //    Console.WriteLine("NC");
-                    if(messageFromClient.Type == "Message")
-                         Server_class.serverDatabase.saveMessageToDb(messageFromClient);
+                    if (messageFromClient.Type == "Message")
+                        Server_class.serverDatabase.saveMessageToDb(messageFromClient);
                     if (messageFromClient.Type == "Logout")
                         break;
 
-                    Console.WriteLine("Am tratat " + client.ToString());
+                    Console.WriteLine("Finished handling for: " + clientInDictionary.Key);
                 }
                 catch (Exception e)
                 {
@@ -142,14 +160,31 @@ namespace Server
 
             }
             stream.Close();
-            Console.WriteLine("Am iesit de aici");
+            Console.WriteLine("Thread terminated through Logout!");
 
         }
+
+        private void sendUsersList()
+        {
+            List<string> list = new List<string>();
+
+            foreach(var client in clientList)
+            {
+                list.Add(client.Key);
+            }
+            foreach (var client in clientList)
+            {
+                var stream = client.Value.GetStream();
+                IFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, list);
+                stream.Flush();
+            }
+        }
+
         public void ServerReceive(TcpClient clientn, string username)
         {
             byte[] data = new byte[1000];
             string text = null;
-            //Console.WriteLine(username);
             while (true)
             {
 
@@ -236,6 +271,7 @@ namespace Server
         private static TcpClient acceptConnectionToClient(TcpListener listener)
         {
             TcpClient client = listener.AcceptTcpClient();
+            Console.WriteLine();
             Console.WriteLine("Client accepted...");
             return client;
         }

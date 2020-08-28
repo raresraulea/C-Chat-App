@@ -102,6 +102,9 @@ namespace Server
                             flag_first = false;
                             break;
                         case "Message":
+                            ChatAppClasses.Message messageToBroadcast = new ChatAppClasses.Message();
+                            messageToBroadcast = messageFromClient;
+                            broadcastMessage(messageToBroadcast);
                             response = "Message handled!";
                             break;
                         case "Login":
@@ -137,7 +140,7 @@ namespace Server
 
                     formatter.Serialize(stream, messageToSend);
                     stream.Flush();
-                    
+
                     if (response == "Wrong Credentials!")
                     {
                         Thread.Sleep(300);
@@ -145,8 +148,15 @@ namespace Server
                         clientList.Remove(clientToRemove.Key);
                         break;
                     }
+                    if (messageFromClient.Type == "broadcastMessage")
+                    {
+                        messageFromClient.Type = "Message";
+                    }
                     if (messageFromClient.Type == "Message")
+                    {
+                        Console.WriteLine("SAVING MESSAGE TO DATABASE!");
                         Server_class.serverDatabase.saveMessageToDb(messageFromClient);
+                    }
                     if (messageFromClient.Type == "Logout" || messageFromClient.Type == "SignUp")
                     {
                         stream.Close();
@@ -160,10 +170,8 @@ namespace Server
 
                     Console.WriteLine("Reading error: " + e.Message);
                 }
-
-
             }
-            
+
             Console.WriteLine("Thread terminated through Logout!");
 
         }
@@ -187,8 +195,19 @@ namespace Server
                 stream.Flush();
             }
         }
+        private void broadcastMessage(ChatAppClasses.Message messageToBroadcast)
+        {
+            messageToBroadcast.Type = "broadcastMessage";
+            foreach (var client in clientList)
+            {
+                var stream = client.Value.GetStream();
+                IFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, messageToBroadcast);
+                stream.Flush();
+            }
+        }
 
-        
+
         internal static void sendClientInvLoginMsg()
         {
             throw new NotImplementedException();

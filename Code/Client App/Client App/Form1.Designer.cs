@@ -28,9 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            
-
-
             this.messageBox = new System.Windows.Forms.TextBox();
             this.sendMessageButton = new System.Windows.Forms.Button();
             this.LoginBtn = new System.Windows.Forms.Button();
@@ -195,6 +192,7 @@
             this.onlineUsersLV.Size = new System.Drawing.Size(257, 263);
             this.onlineUsersLV.TabIndex = 31;
             this.onlineUsersLV.UseCompatibleStateImageBehavior = false;
+            this.onlineUsersLV.View = System.Windows.Forms.View.List;
             // 
             // Form1
             // 

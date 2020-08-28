@@ -42,8 +42,11 @@ namespace Client_App
                 case "ShowLogoutPopup":
                     myFormControl1.Invoke(myFormControl1.LogoutPopupDelegate);
                     break;
+                case "UpdateMessageListView":
+                    myFormControl1.Invoke(myFormControl1.UpdateMessagesDelegate);
+                    break;
 
-                    
+
             }
             
         }

@@ -24,6 +24,7 @@ namespace Client_App
         bool startedConnection = false;
         bool loggedIn = false;
         delegate void UserUpdateCallback(string text);
+        delegate void MessageUpdateCallback(string text);
 
         public delegate void LoginUI();
         public LoginUI LoginUIDelegate;
@@ -49,6 +50,9 @@ namespace Client_App
         public delegate void LogoutPopup();
         public LogoutPopup LogoutPopupDelegate;
 
+        public delegate void UpdateMessages();
+        public UpdateMessages UpdateMessagesDelegate;
+
         Thread loginThread;
 
         public Form1()
@@ -71,6 +75,12 @@ namespace Client_App
             ClearUsersListViewDelegate = new ClearUsersListView(clearUsersListView);
             DoLogoutDelegate = new DoLogout(doLogout);
             LogoutPopupDelegate = new LogoutPopup(showLogoutPopup);
+            UpdateMessagesDelegate = new UpdateMessages(updateMessageListView);
+        }
+
+        private void updateMessageListView()
+        {
+            throw new NotImplementedException();
         }
 
         private static void showDisconnectPopup()
@@ -159,21 +169,15 @@ namespace Client_App
                 ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
                 messageToSend.MessageText = this.messageBox.Text;
                 messageToSend.Type = "Message";
-                messageToSend.username = "standard";
+                messageToSend.username = this.UsernameTB.Text;
                 formatter.Serialize(connection.networkStream, messageToSend);
                 this.messageBox.Text = "";
 
-                StreamReader streamReader = new StreamReader(connection.networkStream);
-                string responseFromServer = streamReader.ReadLine();
-                Console.WriteLine(responseFromServer);
-
-                connection.networkStream.Close();
-                connection.client.Close();
             }
             catch (Exception exc)
             {
 
-                Console.WriteLine("failed to send..." + exc.Message);
+                Console.WriteLine("Failed to send..." + exc.Message);
             }
         }
         private void LoginBtn_Click(object sender, EventArgs e)
@@ -205,7 +209,7 @@ namespace Client_App
             {
                 loggedIn = false;
                 adminApp.Visible = false;
-                
+
                 ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
                 messageToSend.Type = "Logout";
                 IFormatter formatter = new BinaryFormatter();
@@ -213,14 +217,6 @@ namespace Client_App
                 formatter.Serialize(connection.networkStream, messageToSend);
                 connection.networkStream.Flush();
 
-                //ChatAppClasses.Message messageFromServer;
-                //messageFromServer = (ChatAppClasses.Message)formatter.Deserialize(connection.networkStream);
-
-            //    if (messageFromServer.MessageText == "Logged Out!")
-            //    {
-            //        doLogout();
-            //        showLogoutPopup();
-            //    }
             }
             else
             {
@@ -240,7 +236,7 @@ namespace Client_App
 
                 MyThreadClass myThreadClassObject = new MyThreadClass(this);
                 string responseFromServer = messageFromServer.MessageText;
-                
+
                 switch (responseFromServer)
                 {
                     case Constants.UserLoginSuccessResponse:
@@ -264,8 +260,16 @@ namespace Client_App
                         break;
                 }
 
-                updateOnlineUsers(messageFromServer);
-
+                switch(messageFromServer.Type)
+                {
+                    case "List":
+                        updateOnlineUsers(messageFromServer);
+                        break;
+                    case "broadcastMessage":
+                        UpdateBroadcastedMessage(messageFromServer);
+                        break;
+                }
+                
             }
             Console.WriteLine("Listen Thread stopped: Logged Out");
             loginThread.Abort();
@@ -304,6 +308,32 @@ namespace Client_App
                 {
                     UpdateUsers(user);
                 }
+            }
+        }
+        private void UpdateBroadcastedMessage(ChatAppClasses.Message messageFromServer)
+        {
+            if (messageFromServer.Type == "broadcastMessage")
+            {
+                MyThreadClass myThreadClassObject = new MyThreadClass(this);
+                //myThreadClassObject.Run("ClearUsersListView");
+
+                UpdateMessagesWithDelegate(messageFromServer.MessageText);
+
+            }
+        }
+        private void UpdateMessagesWithDelegate(string message)
+        {
+            // InvokeRequired required compares the thread ID of the
+            // calling thread to the thread ID of the creating thread.
+            // If these threads are different, it returns true.
+            if (this.InvokeRequired)
+            {
+                MessageUpdateCallback messageUpdate = new MessageUpdateCallback(UpdateMessagesWithDelegate);
+                this.Invoke(messageUpdate, new object[] { message });
+            }
+            else
+            {
+                this.MessagesListView.Items.Add(message);
             }
         }
 

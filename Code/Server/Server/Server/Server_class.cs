@@ -148,7 +148,10 @@ namespace Server
                     if (messageFromClient.Type == "Message")
                         Server_class.serverDatabase.saveMessageToDb(messageFromClient);
                     if (messageFromClient.Type == "Logout" || messageFromClient.Type == "SignUp")
+                    {
+                        stream.Close();
                         break;
+                    }
 
                     Console.WriteLine("Finished handling for: " + clientInDictionary.Key);
                 }
@@ -160,7 +163,7 @@ namespace Server
 
 
             }
-            //stream.Close();
+            
             Console.WriteLine("Thread terminated through Logout!");
 
         }

@@ -19,7 +19,7 @@ namespace Client_App
 {
     public partial class Form1 : Form
     {
-        private connectionToServer connection;
+        public connectionToServer connection;
         AdminForm adminApp = new AdminForm();
         bool startedConnection = false;
         bool loggedIn = false;
@@ -43,6 +43,14 @@ namespace Client_App
         public delegate void ClearUsersListView();
         public ClearUsersListView ClearUsersListViewDelegate;
 
+        public delegate void DoLogout();
+        public DoLogout DoLogoutDelegate;
+
+        public delegate void LogoutPopup();
+        public LogoutPopup LogoutPopupDelegate;
+
+        Thread loginThread;
+
         public Form1()
         {
             InitializeComponent();
@@ -61,6 +69,8 @@ namespace Client_App
             WelcomeAdminPopupDelegate = new WelcomeAdmin(showWelcomeAdminPopup);
             WrongCredentialsPopupDelegate = new WrongCredentialsPopup(showWrongCredentialsPopup);
             ClearUsersListViewDelegate = new ClearUsersListView(clearUsersListView);
+            DoLogoutDelegate = new DoLogout(doLogout);
+            LogoutPopupDelegate = new LogoutPopup(showLogoutPopup);
         }
 
         private static void showDisconnectPopup()
@@ -146,7 +156,6 @@ namespace Client_App
                 }
                 BinaryFormatter formatter = new BinaryFormatter();
 
-
                 ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
                 messageToSend.MessageText = this.messageBox.Text;
                 messageToSend.Type = "Message";
@@ -170,7 +179,8 @@ namespace Client_App
         private void LoginBtn_Click(object sender, EventArgs e)
         {
             loggedIn = true;
-            Thread loginThread = new Thread(() => listenLoggedIn());
+            loginThread = new Thread(() => listenLoggedIn());
+
             if (this.LoginBtn.Text == "Login")
             {
                 if (!startedConnection)
@@ -188,7 +198,6 @@ namespace Client_App
                 formatter.Serialize(connection.networkStream, messageToSend);
                 connection.networkStream.Flush();
 
-
                 loginThread.Start();
                 return;
             }
@@ -196,7 +205,7 @@ namespace Client_App
             {
                 loggedIn = false;
                 adminApp.Visible = false;
-
+                
                 ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
                 messageToSend.Type = "Logout";
                 IFormatter formatter = new BinaryFormatter();
@@ -204,14 +213,14 @@ namespace Client_App
                 formatter.Serialize(connection.networkStream, messageToSend);
                 connection.networkStream.Flush();
 
-                ChatAppClasses.Message messageFromServer;
-                messageFromServer = (ChatAppClasses.Message)formatter.Deserialize(connection.networkStream);
+                //ChatAppClasses.Message messageFromServer;
+                //messageFromServer = (ChatAppClasses.Message)formatter.Deserialize(connection.networkStream);
 
-                if (messageFromServer.MessageText == "Logged Out!")
-                {
-                    doLogout();
-                    showLogoutPopup();
-                }
+            //    if (messageFromServer.MessageText == "Logged Out!")
+            //    {
+            //        doLogout();
+            //        showLogoutPopup();
+            //    }
             }
             else
             {
@@ -220,7 +229,7 @@ namespace Client_App
 
         }
 
-        private void listenLoggedIn()
+        public void listenLoggedIn()
         {
             Console.WriteLine("Listen Thread started: Logged In");
             BinaryFormatter formatter = new BinaryFormatter();
@@ -248,7 +257,10 @@ namespace Client_App
                         loggedIn = false;
                         startedConnection = false;
                         break;
-                    case "Logged out!":
+                    case "Logged Out!":
+                        myThreadClassObject.Run("DoLogout");
+                        myThreadClassObject.Run("ShowLogoutPopup");
+                        loggedIn = false;
                         break;
                 }
 
@@ -256,6 +268,7 @@ namespace Client_App
 
             }
             Console.WriteLine("Listen Thread stopped: Logged Out");
+            loginThread.Abort();
         }
 
         private static void showWrongCredentialsPopup()
@@ -455,7 +468,7 @@ namespace Client_App
 
         private void button1_Click_2(object sender, EventArgs e)
         {
-            SettingForm settingForm = new SettingForm();
+            SettingForm settingForm = new SettingForm(this);
             settingForm.Show();
         }
     }

@@ -36,6 +36,14 @@ namespace Client_App
                 case "ClearUsersListView":
                     myFormControl1.Invoke(myFormControl1.ClearUsersListViewDelegate);
                     break;
+                case "DoLogout":
+                    myFormControl1.Invoke(myFormControl1.DoLogoutDelegate);
+                    break;
+                case "ShowLogoutPopup":
+                    myFormControl1.Invoke(myFormControl1.LogoutPopupDelegate);
+                    break;
+
+                    
             }
             
         }

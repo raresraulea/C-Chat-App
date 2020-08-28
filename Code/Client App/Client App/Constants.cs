@@ -23,5 +23,8 @@ namespace Client_App
         internal static Color LoginPopupColor = Color.MediumSeaGreen;
         internal static Color LogoutPopupColor = Color.DarkOrange;
         internal static Color WrongCredentialsPopupColor= Color.DarkOrange;
+        public const string UserLoginSuccessResponse = "Logged In!";
+        public const string WelcomeAdminResponse = "Welcome, Admin!" ;
+        public const string WrongCredentialsResponse = "Wrong Credentials!";
     }
 }

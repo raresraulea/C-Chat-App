@@ -12,14 +12,23 @@ namespace Client_App
 {
     public partial class SettingForm : Form
     {
+        Form1 myForm = new Form1();
+
         public SettingForm()
         {
             InitializeComponent();
         }
+        public SettingForm(Form1 form)
+        {
+            InitializeComponent();
+            myForm = form;
+        }
 
         private void ConnectBtn_Click(object sender, EventArgs e)
         {
-            //Form1.updateSettings(this.IPAddressTB.Text, int.Parse(PortTB.Text));
+            myForm.connection.IPAddress = this.IPAddressTB.Text;
+            myForm.connection.port = int.Parse(PortTB.Text);
+            
         }
     }
 }

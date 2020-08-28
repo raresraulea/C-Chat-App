@@ -48,12 +48,5 @@ namespace Server
             else Console.WriteLine("Username already taken!");
         }
 
-        //private void updateOnlineUsers(User user)
-        //{
-        //    Console.WriteLine(user.username + " logged in to server!");
-        //    if (Server_class.onlineUsers.Where(x => x.username == user.username).Count() < 1)
-        //        Server_class.onlineUsers.Add(user);
-        //}
-
     }
 }

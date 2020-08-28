@@ -204,7 +204,7 @@ namespace Server
             {
                  {"@Message", message.MessageText},
                  {"@Receiver", message.Receiver},
-                 {"@Sender", message.Sender}
+                 {"@Sender", message.username}
             };
 
             return ExecuteWrite(query, args);

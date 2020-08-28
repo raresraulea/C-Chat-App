@@ -155,6 +155,7 @@ namespace Server
                     if (messageFromClient.Type == "Message")
                     {
                         Console.WriteLine("SAVING MESSAGE TO DATABASE!");
+                        cropUsernameFromMessage(messageFromClient);
                         Server_class.serverDatabase.saveMessageToDb(messageFromClient);
                     }
                     if (messageFromClient.Type == "Logout" || messageFromClient.Type == "SignUp")
@@ -174,6 +175,20 @@ namespace Server
 
             Console.WriteLine("Thread terminated through Logout!");
 
+        }
+
+        private void cropUsernameFromMessage(ChatAppClasses.Message message)
+        {
+            string updatedMessageText = "";
+            bool encounteredSpace = false;
+            for (var i = 0; i < message.MessageText.Length; i++)
+            {
+                if (encounteredSpace)
+                    updatedMessageText += message.MessageText[i];
+                else if (message.MessageText[i] == ' ')
+                    encounteredSpace = true;
+            }
+            message.MessageText = updatedMessageText;
         }
 
         private void sendUsersList()
@@ -198,6 +213,7 @@ namespace Server
         private void broadcastMessage(ChatAppClasses.Message messageToBroadcast)
         {
             messageToBroadcast.Type = "broadcastMessage";
+            messageToBroadcast.MessageText = messageToBroadcast.username + ": " + messageToBroadcast.MessageText;
             foreach (var client in clientList)
             {
                 var stream = client.Value.GetStream();

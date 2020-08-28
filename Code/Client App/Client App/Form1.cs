@@ -21,8 +21,10 @@ namespace Client_App
     {
         public connectionToServer connection;
         AdminForm adminApp = new AdminForm();
+        User myUser = new User();
         bool startedConnection = false;
         bool loggedIn = false;
+        
         delegate void UserUpdateCallback(string text);
         delegate void MessageUpdateCallback(string text);
 
@@ -169,7 +171,7 @@ namespace Client_App
                 ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
                 messageToSend.MessageText = this.messageBox.Text;
                 messageToSend.Type = "Message";
-                messageToSend.username = this.UsernameTB.Text;
+                messageToSend.username = myUser.username;
                 formatter.Serialize(connection.networkStream, messageToSend);
                 this.messageBox.Text = "";
 
@@ -184,6 +186,8 @@ namespace Client_App
         {
             loggedIn = true;
             loginThread = new Thread(() => listenLoggedIn());
+            myUser.username = this.UsernameTB.Text;
+            myUser.password = this.PasswordTB.Text;
 
             if (this.LoginBtn.Text == "Login")
             {
@@ -315,7 +319,6 @@ namespace Client_App
             if (messageFromServer.Type == "broadcastMessage")
             {
                 MyThreadClass myThreadClassObject = new MyThreadClass(this);
-                //myThreadClassObject.Run("ClearUsersListView");
 
                 UpdateMessagesWithDelegate(messageFromServer.MessageText);
 

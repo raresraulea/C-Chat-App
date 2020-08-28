@@ -17,8 +17,6 @@ namespace Server
         public static Database serverDatabase;
 
         Dictionary<string, TcpClient> clientList = new Dictionary<string, TcpClient>();
-        CancellationTokenSource cancellation = new CancellationTokenSource();
-        static int clientID = 1;
 
         public void connectToDatabase(Database database)
         {
@@ -43,18 +41,14 @@ namespace Server
 
                 try
                 {
-                    byte[] buffer = new byte[1024];
-
                     if (!clientList.ContainsValue(client))
                     {
                         var thread = new Thread(() => handleIncomingMessage(client));
                         thread.Start();
                     }
-
                 }
                 catch (Exception e)
                 {
-
                     Console.WriteLine("Failed to start..." + e.Message);
                 }
             }
@@ -70,15 +64,12 @@ namespace Server
             bool flag_first = true;
 
             if (!clientList.ContainsValue(client))
-            {
                 clientList.Add(messageFromClient.username, client);
-                clientID++;
-            }
 
+            //getting the client for using it by username
             KeyValuePair<string, TcpClient> clientInDictionary;
             clientInDictionary = clientList.First(dictionaryItem => dictionaryItem.Value == client);
             Console.WriteLine("Handling " + clientInDictionary.Key);
-
 
             while (true)
             {
@@ -88,77 +79,23 @@ namespace Server
                     StreamWriter streamWriter = new StreamWriter(stream);
 
                     if (!flag_first)
-                    {
                         messageFromClient = (ChatAppClasses.Message)formatter.Deserialize(stream);
-                        Console.WriteLine("Update Message" + messageFromClient.Type);
 
-                    }
-
-                    string response;
-                    switch (messageFromClient.Type)
-                    {
-                        case "Connection":
-                            response = "Connected";
-                            flag_first = false;
-                            break;
-                        case "Message":
-                            ChatAppClasses.Message messageToBroadcast = new ChatAppClasses.Message();
-                            messageToBroadcast = messageFromClient;
-                            broadcastMessage(messageToBroadcast);
-                            response = "Message handled!";
-                            break;
-                        case "Login":
-                            User user = new User();
-                            user.username = messageFromClient.username;
-                            user.password = messageFromClient.password;
-                            response = handleLogin(user);
-                            if (response == "Logged In!" || response == "Welcome, Admin!")
-                                sendUsersList();
-                            flag_first = false;
-                            break;
-                        case "Logout":
-                            var clientToBeRemoved = clientList.First(dictionaryItem => dictionaryItem.Value == client);
-                            clientList.Remove(clientToBeRemoved.Key);
-                            response = "Logged Out!";
-                            sendUsersList();
-                            break;
-                        case "SignUp":
-                            response = handleSignUp(new User() { username = messageFromClient.username, password = messageFromClient.password });
-                            var clientToRemove = clientList.First(dictionaryItem => dictionaryItem.Value == client);
-                            clientList.Remove(clientToRemove.Key);
-                            break;
-
-                        default:
-                            response = "Error";
-                            break;
-                    }
+                    string response = calculateResponseByMessageType(client, messageFromClient, ref flag_first);
 
                     Console.WriteLine("The response sent by the server: " + response);
 
-                    ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
-                    messageToSend.MessageText = response;
+                    sendMessageBackToClient(stream, formatter, response);
 
-                    formatter.Serialize(stream, messageToSend);
-                    stream.Flush();
-
-                    if (response == "Wrong Credentials!")
+                    if (response == Constants.response_wrongCredentials)
                     {
-                        Thread.Sleep(300);
-                        var clientToRemove = clientList.First(dictionaryItem => dictionaryItem.Value == client);
-                        clientList.Remove(clientToRemove.Key);
+                        removeClientFromOnlineUsers(client);
                         break;
                     }
-                    if (messageFromClient.Type == "broadcastMessage")
-                    {
-                        messageFromClient.Type = "Message";
-                    }
-                    if (messageFromClient.Type == "Message")
-                    {
-                        Console.WriteLine("SAVING MESSAGE TO DATABASE!");
-                        cropUsernameFromMessage(messageFromClient);
-                        Server_class.serverDatabase.saveMessageToDb(messageFromClient);
-                    }
-                    if (messageFromClient.Type == "Logout" || messageFromClient.Type == "SignUp")
+                    
+                    handleType_message(messageFromClient);
+                    
+                    if (messageFromClient.Type == Constants.messageType_logout || messageFromClient.Type == Constants.messageType_signUp)
                     {
                         stream.Close();
                         break;
@@ -175,6 +112,81 @@ namespace Server
 
             Console.WriteLine("Thread terminated through Logout!");
 
+        }
+
+        private void handleType_message(ChatAppClasses.Message messageFromClient)
+        {
+            if (messageFromClient.Type == Constants.messageType_broadcastMessage)
+                messageFromClient.Type = Constants.messageType_message;
+
+            if (messageFromClient.Type == Constants.messageType_message)
+            {
+                Console.WriteLine("Saving message to Database...");
+                cropUsernameFromMessage(messageFromClient);
+                Server_class.serverDatabase.saveMessageToDb(messageFromClient);
+            }
+        }
+
+
+        private void removeClientFromOnlineUsers(TcpClient client)
+        {
+            var clientToRemove = clientList.First(dictionaryItem => dictionaryItem.Value == client);
+            clientList.Remove(clientToRemove.Key);
+        }
+
+        private static void sendMessageBackToClient(NetworkStream stream, IFormatter formatter, string response)
+        {
+            ChatAppClasses.Message messageToSend = new ChatAppClasses.Message();
+            messageToSend.MessageText = response;
+
+            formatter.Serialize(stream, messageToSend);
+            stream.Flush();
+        }
+
+        private string calculateResponseByMessageType(TcpClient client, ChatAppClasses.Message messageFromClient, ref bool flag_first)
+        {
+            string response;
+            switch (messageFromClient.Type)
+            {
+                case Constants.messageType_connection:
+                    response = "Connected";
+                    flag_first = false;
+                    break;
+
+                case Constants.messageType_message:
+                    ChatAppClasses.Message messageToBroadcast = new ChatAppClasses.Message();
+                    messageToBroadcast = messageFromClient;
+                    broadcastMessage(messageToBroadcast);
+                    response = "Message handled!";
+                    break;
+
+                case Constants.messageType_login:
+                    User user = new User(messageFromClient.username, messageFromClient.password);
+                    response = handleLogin(user);
+                    if (response == "Logged In!" || response == "Welcome, Admin!")
+                        sendUsersList();
+                    flag_first = false;
+                    break;
+
+                case Constants.messageType_logout:
+                    var clientToBeRemoved = clientList.First(dictionaryItem => dictionaryItem.Value == client);
+                    clientList.Remove(clientToBeRemoved.Key);
+                    response = "Logged Out!";
+                    sendUsersList();
+                    break;
+
+                case Constants.messageType_signUp:
+                    response = handleSignUp(new User() { username = messageFromClient.username, password = messageFromClient.password });
+                    var clientToRemove = clientList.First(dictionaryItem => dictionaryItem.Value == client);
+                    clientList.Remove(clientToRemove.Key);
+                    break;
+
+                default:
+                    response = "Error";
+                    break;
+            }
+
+            return response;
         }
 
         private void cropUsernameFromMessage(ChatAppClasses.Message message)
@@ -199,9 +211,11 @@ namespace Server
             {
                 list.Add(client.Key);
             }
+            
             ChatAppClasses.Message onlineUsersList = new ChatAppClasses.Message();
             onlineUsersList.Type = "List";
             onlineUsersList.onlineUser = list;
+            
             foreach (var client in clientList)
             {
                 var stream = client.Value.GetStream();
@@ -223,19 +237,16 @@ namespace Server
             }
         }
 
-
-        internal static void sendClientInvLoginMsg()
-        {
-            throw new NotImplementedException();
-        }
-
         private static TcpClient acceptConnectionToClient(TcpListener listener)
         {
             TcpClient client = listener.AcceptTcpClient();
+            
             Console.WriteLine();
             Console.WriteLine("Client accepted...");
+            
             return client;
         }
+
         public static string handleLogin(User user)
         {
             Login login = Login.Instance;
@@ -245,56 +256,17 @@ namespace Server
             return loginResponse;
         }
 
-        public static void sendChatHistoryToClient()
-        {
-
-        }
         public string handleSignUp(User user)
         {
             SignUp signUp = SignUp.Instance;
             return SignUp.signUp(user);
         }
 
-        public static void sendDeleteConfirmationToClient()
-        {
-
-        }
-        public static void getMessageInfoFromDB()
-        {
-
-        }
-        public static void sendMessageInfoToClient()
-        {
-
-        }
-        public static void getUserInfoFromDB()
-        {
-
-        }
-        public static void sendUserInfoToClient()
-        {
-
-        }
-
-        public void sendPrivateMessage()
-        {
-
-        }
-        public void sendPublicMessage()
-        {
-
-        }
+        
         public static void saveMessageToDB(ChatAppClasses.Message message)
         {
             serverDatabase.saveMessageToDb(message);
         }
-        public void disconnectFromClient()
-        {
-
-        }
-        public void disconnectFromDB()
-        {
-
-        }
+       
     }
 }

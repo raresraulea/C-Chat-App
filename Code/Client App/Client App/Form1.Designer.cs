@@ -28,6 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("click");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Rares");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("Ana");
             this.messageBox = new System.Windows.Forms.TextBox();
             this.sendMessageButton = new System.Windows.Forms.Button();
             this.LoginBtn = new System.Windows.Forms.Button();
@@ -185,13 +188,20 @@
             // 
             // onlineUsersLV
             // 
+            this.onlineUsersLV.Activation = System.Windows.Forms.ItemActivation.TwoClick;
             this.onlineUsersLV.HideSelection = false;
+            this.onlineUsersLV.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem1,
+            listViewItem2,
+            listViewItem3});
             this.onlineUsersLV.Location = new System.Drawing.Point(693, 333);
+            this.onlineUsersLV.MultiSelect = false;
             this.onlineUsersLV.Name = "onlineUsersLV";
             this.onlineUsersLV.Size = new System.Drawing.Size(257, 287);
             this.onlineUsersLV.TabIndex = 31;
             this.onlineUsersLV.UseCompatibleStateImageBehavior = false;
             this.onlineUsersLV.View = System.Windows.Forms.View.List;
+            this.onlineUsersLV.SelectedIndexChanged += new System.EventHandler(this.onlineUsersLV_SelectedIndexChanged_1);
             // 
             // GroupChatTitle
             // 

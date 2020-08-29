@@ -21,7 +21,7 @@ namespace Client_App
     {
         public connectionToServer connection;
         AdminForm adminApp = new AdminForm();
-        User myUser = new User();
+        public User myUser = new User();
         bool startedConnection = false;
         bool loggedIn = false;
         
@@ -262,6 +262,7 @@ namespace Client_App
                         myThreadClassObject.Run("ShowLogoutPopup");
                         loggedIn = false;
                         break;
+                    
                 }
 
                 switch(messageFromServer.Type)
@@ -271,6 +272,11 @@ namespace Client_App
                         break;
                     case "broadcastMessage":
                         UpdateBroadcastedMessage(messageFromServer);
+                        break;
+                    case "PrivateMessage":
+                        PrivateMessageForm form = new PrivateMessageForm(this, messageFromServer.Sender);
+                        form.MessagesListView.Items.Add(messageFromServer.MessageText);
+                        form.Show();
                         break;
                 }
                 
@@ -382,7 +388,13 @@ namespace Client_App
             popup.Show();
         }
 
-
+        //private void onlineUsersLV_ItemActivate(object sender, EventArgs e)
+        //{
+        //    int otherParticipant_index = onlineUsersLV.SelectedIndices[0];
+        //    string otherParticipant_username = onlineUsersLV.Items[otherParticipant_index].Text;
+        //    PrivateMessageForm privateMessageForm = new PrivateMessageForm(otherParticipant_username);
+        //    privateMessageForm.Show();
+        //}
 
         private void LogoutDeactivations()
         {
@@ -503,6 +515,22 @@ namespace Client_App
         {
             SettingForm settingForm = new SettingForm(this);
             settingForm.Show();
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void onlineUsersLV_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            if (onlineUsersLV.SelectedItems.Count > 0)
+            {
+                int otherParticipant_index = onlineUsersLV.SelectedIndices[0];
+                string otherParticipant_username = onlineUsersLV.Items[otherParticipant_index].Text;
+                PrivateMessageForm privateMessageForm = new PrivateMessageForm(this, otherParticipant_username);
+                privateMessageForm.Show();
+            }
         }
     }
 }

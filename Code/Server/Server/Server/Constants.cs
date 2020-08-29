@@ -11,6 +11,7 @@ namespace Server
         public const string messageType_login = "Login";
         public const string messageType_logout = "Logout";
         public const string messageType_signUp = "SignUp";
+        public const string messageType_privateMessage = "PrivateMessage";
         public const string messageType_broadcastMessage = "broadcastMessage";
         public const string response_wrongCredentials = "Wrong Credentials!";
     }

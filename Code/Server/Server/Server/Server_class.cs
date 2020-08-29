@@ -119,7 +119,7 @@ namespace Server
             if (messageFromClient.Type == Constants.messageType_broadcastMessage)
                 messageFromClient.Type = Constants.messageType_message;
 
-            if (messageFromClient.Type == Constants.messageType_message)
+            if (messageFromClient.Type == Constants.messageType_message || messageFromClient.Type == Constants.messageType_privateMessage)
             {
                 Console.WriteLine("Saving message to Database...");
                 cropUsernameFromMessage(messageFromClient);
@@ -159,6 +159,12 @@ namespace Server
                     broadcastMessage(messageToBroadcast);
                     response = "Message handled!";
                     break;
+                case Constants.messageType_privateMessage:
+                    KeyValuePair<string, TcpClient> clientToSend = getReceiverClient(messageFromClient);
+                    Console.WriteLine(messageFromClient.Sender + ", receiver: " + messageFromClient.Receiver + ", msg: " + messageFromClient.MessageText);
+                    sendPrivateMessage(messageFromClient, clientToSend);
+                    response = "Message handled!";
+                    break;
 
                 case Constants.messageType_login:
                     User user = new User(messageFromClient.username, messageFromClient.password);
@@ -187,6 +193,19 @@ namespace Server
             }
 
             return response;
+        }
+
+        private KeyValuePair<string, TcpClient> getReceiverClient(ChatAppClasses.Message messageFromClient)
+        {
+            return clientList.First(dictionaryItem => dictionaryItem.Key == messageFromClient.Receiver);
+        }
+
+        private static void sendPrivateMessage(ChatAppClasses.Message messageFromClient, KeyValuePair<string, TcpClient> clientToSend)
+        {
+            var stream = clientToSend.Value.GetStream();
+            BinaryFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(stream, messageFromClient);
+            stream.Flush();
         }
 
         private void cropUsernameFromMessage(ChatAppClasses.Message message)

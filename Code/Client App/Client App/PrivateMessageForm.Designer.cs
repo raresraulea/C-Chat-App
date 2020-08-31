@@ -32,6 +32,7 @@
             this.MessagesListView = new System.Windows.Forms.ListView();
             this.sendMessageButton = new System.Windows.Forms.Button();
             this.messageBox = new System.Windows.Forms.TextBox();
+            this.textLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // PrivateChatTitle
@@ -82,11 +83,21 @@
             this.messageBox.Size = new System.Drawing.Size(406, 27);
             this.messageBox.TabIndex = 33;
             // 
+            // textLabel
+            // 
+            this.textLabel.AutoSize = true;
+            this.textLabel.Location = new System.Drawing.Point(22, 400);
+            this.textLabel.Name = "textLabel";
+            this.textLabel.Size = new System.Drawing.Size(35, 17);
+            this.textLabel.TabIndex = 37;
+            this.textLabel.Text = "Text";
+            // 
             // PrivateMessageForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(583, 414);
+            this.ClientSize = new System.Drawing.Size(601, 539);
+            this.Controls.Add(this.textLabel);
             this.Controls.Add(this.PrivateChatTitle);
             this.Controls.Add(this.MessagesListView);
             this.Controls.Add(this.sendMessageButton);
@@ -105,5 +116,6 @@
         private System.Windows.Forms.Button sendMessageButton;
         private System.Windows.Forms.TextBox messageBox;
         public System.Windows.Forms.ListView MessagesListView;
+        public System.Windows.Forms.Label textLabel;
     }
 }

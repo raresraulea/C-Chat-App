@@ -30,9 +30,6 @@ namespace Client_App
             this.FormClosing += PrivateMessageForm_FormClosing;
         }
 
-
-
-
         private void PrivateMessageForm_FormClosing(Object sender, FormClosingEventArgs e)
         {
             //In case windows is trying to shut down, don't hold the process up

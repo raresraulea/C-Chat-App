@@ -19,6 +19,7 @@ namespace Client_App
 {
     public partial class Form1 : Form
     {
+        public PrivateMessageForm globalForm = new PrivateMessageForm();
         public Dictionary<string, PrivateMessageForm> userForms = new Dictionary<string, PrivateMessageForm>();
         public Dictionary<string, bool> isPMFormOpen = new Dictionary<string, bool>();
         public connectionToServer connection;
@@ -242,7 +243,7 @@ namespace Client_App
 
                 MyThreadClass myThreadClassObject = new MyThreadClass(this);
                 string responseFromServer = messageFromServer.MessageText;
-
+                 
                 switch (responseFromServer)
                 {
                     case Constants.UserLoginSuccessResponse:
@@ -287,20 +288,25 @@ namespace Client_App
                         UpdateBroadcastedMessage(messageFromServer);
                         break;
                     case "PrivateMessage":
-                        PrivateMessageForm form = userForms[messageFromServer.Sender];
+                        PrivateMessageForm form1 = userForms[messageFromServer.Sender];
+                        Console.WriteLine(messageFromServer.Sender + ", form: " + form1.Name);
                         if (!isPMFormOpen[messageFromServer.Sender])
                         {
                             Console.WriteLine("Nu e deschis!");
-                            form.MessagesListView.Items.Add(messageFromServer.MessageText);
-                            form.ShowDialog();
+                            form1.MessagesListView.Items.Add(messageFromServer.MessageText);
+                            form1.ShowDialog();
                             isPMFormOpen[messageFromServer.Sender] = true;
                         }
                         else
                         {
-                            Console.WriteLine("SUNT BINE!");
-                            form.Hide();
-                            form.MessagesListView.Items.Add(messageFromServer.MessageText);
-                            form.ShowDialog();
+                            Console.WriteLine("FORM deschis!");
+                            userForms[messageFromServer.Sender].textLabel.Text += messageFromServer.MessageText;
+                            userForms[messageFromServer.Sender].MessagesListView.BeginUpdate();
+                            userForms[messageFromServer.Sender].MessagesListView.Items.Add(messageFromServer.MessageText);
+                            userForms[messageFromServer.Sender].MessagesListView.EndUpdate();
+                            //userForms[messageFromServer.Sender].Hide();
+                            //userForms[messageFromServer.Sender].Refresh();
+                            userForms[messageFromServer.Sender].Show();
                         }
                         break;
                 }

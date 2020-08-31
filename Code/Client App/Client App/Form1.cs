@@ -58,6 +58,7 @@ namespace Client_App
         public delegate void UpdateMessages();
         public UpdateMessages UpdateMessagesDelegate;
 
+
         Thread loginThread;
 
         public Form1()
@@ -231,7 +232,10 @@ namespace Client_App
             }
 
         }
-
+        public void updatePM(PrivateMessageForm form, string text)
+        {
+            form.MessagesListView.Items.Add(text);
+        }
         public void listenLoggedIn()
         {
             Console.WriteLine("Listen Thread started: Logged In");
@@ -243,7 +247,7 @@ namespace Client_App
 
                 MyThreadClass myThreadClassObject = new MyThreadClass(this);
                 string responseFromServer = messageFromServer.MessageText;
-                 
+
                 switch (responseFromServer)
                 {
                     case Constants.UserLoginSuccessResponse:
@@ -288,25 +292,27 @@ namespace Client_App
                         UpdateBroadcastedMessage(messageFromServer);
                         break;
                     case "PrivateMessage":
+                        Console.WriteLine("PM received from " + messageFromServer.Sender);
                         PrivateMessageForm form1 = userForms[messageFromServer.Sender];
                         Console.WriteLine(messageFromServer.Sender + ", form: " + form1.Name);
-                        if (!isPMFormOpen[messageFromServer.Sender])
+                        if (!IsFormOpen(form1))
                         {
                             Console.WriteLine("Nu e deschis!");
-                            form1.MessagesListView.Items.Add(messageFromServer.MessageText);
-                            form1.ShowDialog();
+                            this.Invoke((Action)(() => updatePM(form1, messageFromServer.MessageText)));
+                            //form1.MessagesListView.Items.Add(messageFromServer.MessageText);
+                            Application.Run(form1);
                             isPMFormOpen[messageFromServer.Sender] = true;
                         }
                         else
                         {
                             Console.WriteLine("FORM deschis!");
-                            userForms[messageFromServer.Sender].textLabel.Text += messageFromServer.MessageText;
-                            userForms[messageFromServer.Sender].MessagesListView.BeginUpdate();
-                            userForms[messageFromServer.Sender].MessagesListView.Items.Add(messageFromServer.MessageText);
-                            userForms[messageFromServer.Sender].MessagesListView.EndUpdate();
+                            //form1.textLabel.Text += messageFromServer.MessageText;
+                            //form1.MessagesListView.BeginUpdate();
+                            this.Invoke((Action)(() => updatePM(form1, messageFromServer.MessageText)));
+                            //form1.MessagesListView.Items.Add(messageFromServer.MessageText);
+                            // form1.MessagesListView.EndUpdate();
                             //userForms[messageFromServer.Sender].Hide();
                             //userForms[messageFromServer.Sender].Refresh();
-                            userForms[messageFromServer.Sender].Show();
                         }
                         break;
                 }
@@ -317,10 +323,9 @@ namespace Client_App
         }
         public bool IsFormOpen(PrivateMessageForm myForm)
         {
-            foreach (PrivateMessageForm form in Application.OpenForms)
+            foreach (PrivateMessageForm form in Application.OpenForms.OfType<PrivateMessageForm>())
                 if (form.Name == myForm.Name)
                 {
-                    Console.WriteLine(form.Name + " " + myForm.Name);
                     return true;
                 }
             return false;
@@ -569,11 +574,24 @@ namespace Client_App
             {
                 int otherParticipant_index = onlineUsersLV.SelectedIndices[0];
                 string otherParticipant_username = onlineUsersLV.Items[otherParticipant_index].Text;
-                PrivateMessageForm privateMessageForm = new PrivateMessageForm(this, otherParticipant_username);
-                privateMessageForm.Show();
-
+                Console.WriteLine(otherParticipant_username);
+                PrivateMessageForm privateMessageForm = userForms[otherParticipant_username];
+                // PrivateMessageForm privateMessageForm = new PrivateMessageForm(this, otherParticipant_username);
+                // privateMessageForm.Name = onlineUsersLV.Items[otherParticipant_index].Text;
+                // userForms.Add(onlineUsersLV.Items[otherParticipant_index].Text, privateMessageForm);
                 isPMFormOpen[onlineUsersLV.Items[otherParticipant_index].Text] = true;
+                privateMessageForm.ShowDialog();
+                //Thread myT = new Thread(() => startPMForm(privateMessageForm));
+                //myT.Start();
+                //privateMessageForm.ShowDialog();
+
             }
+        }
+
+        private void startPMForm(PrivateMessageForm privateMessageForm)
+        {
+            while (true) 
+                Application.Run(privateMessageForm);
         }
     }
 }

@@ -27,8 +27,22 @@ namespace Client_App
             this.PrivateChatTitle.Text += " " + otherParticipant;
 
             this.form = form;
+            this.FormClosing += PrivateMessageForm_FormClosing;
         }
 
+
+
+
+        private void PrivateMessageForm_FormClosing(Object sender, FormClosingEventArgs e)
+        {
+            //In case windows is trying to shut down, don't hold the process up
+           
+            if (e.CloseReason == CloseReason.UserClosing || e.CloseReason == CloseReason.WindowsShutDown)
+            {
+                form.isPMFormOpen[this.Name] = false;
+            }
+
+        }
         private void PrivateMessageForm_Load(object sender, EventArgs e)
         {
 

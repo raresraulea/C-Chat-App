@@ -19,12 +19,14 @@ namespace Client_App
 {
     public partial class Form1 : Form
     {
+        public Dictionary<string, PrivateMessageForm> userForms = new Dictionary<string, PrivateMessageForm>();
+        public Dictionary<string, bool> isPMFormOpen = new Dictionary<string, bool>();
         public connectionToServer connection;
         AdminForm adminApp = new AdminForm();
         public User myUser = new User();
         bool startedConnection = false;
         bool loggedIn = false;
-        
+
         delegate void UserUpdateCallback(string text);
         delegate void MessageUpdateCallback(string text);
 
@@ -262,27 +264,60 @@ namespace Client_App
                         myThreadClassObject.Run("ShowLogoutPopup");
                         loggedIn = false;
                         break;
-                    
+
                 }
 
-                switch(messageFromServer.Type)
+                switch (messageFromServer.Type)
                 {
                     case "List":
+                        foreach (var user in messageFromServer.onlineUser)
+                        {
+                            if (!userForms.ContainsKey(user))
+                            {
+                                PrivateMessageForm formToAdd = new PrivateMessageForm(this, user);
+                                formToAdd.Name = user;
+                                userForms.Add(user, formToAdd);
+                                isPMFormOpen.Add(user, false);
+                                Console.WriteLine("added form for " + user);
+                            }
+                        }
                         updateOnlineUsers(messageFromServer);
                         break;
                     case "broadcastMessage":
                         UpdateBroadcastedMessage(messageFromServer);
                         break;
                     case "PrivateMessage":
-                        PrivateMessageForm form = new PrivateMessageForm(this, messageFromServer.Sender);
-                        form.MessagesListView.Items.Add(messageFromServer.MessageText);
-                        form.Show();
+                        PrivateMessageForm form = userForms[messageFromServer.Sender];
+                        if (!isPMFormOpen[messageFromServer.Sender])
+                        {
+                            Console.WriteLine("Nu e deschis!");
+                            form.MessagesListView.Items.Add(messageFromServer.MessageText);
+                            form.ShowDialog();
+                            isPMFormOpen[messageFromServer.Sender] = true;
+                        }
+                        else
+                        {
+                            Console.WriteLine("SUNT BINE!");
+                            form.Hide();
+                            form.MessagesListView.Items.Add(messageFromServer.MessageText);
+                            form.ShowDialog();
+                        }
                         break;
                 }
-                
+
             }
             Console.WriteLine("Listen Thread stopped: Logged Out");
             loginThread.Abort();
+        }
+        public bool IsFormOpen(PrivateMessageForm myForm)
+        {
+            foreach (PrivateMessageForm form in Application.OpenForms)
+                if (form.Name == myForm.Name)
+                {
+                    Console.WriteLine(form.Name + " " + myForm.Name);
+                    return true;
+                }
+            return false;
         }
 
         private static void showWrongCredentialsPopup()
@@ -530,6 +565,8 @@ namespace Client_App
                 string otherParticipant_username = onlineUsersLV.Items[otherParticipant_index].Text;
                 PrivateMessageForm privateMessageForm = new PrivateMessageForm(this, otherParticipant_username);
                 privateMessageForm.Show();
+
+                isPMFormOpen[onlineUsersLV.Items[otherParticipant_index].Text] = true;
             }
         }
     }

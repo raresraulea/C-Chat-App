@@ -300,7 +300,9 @@ namespace Client_App
                             Console.WriteLine("Nu e deschis!");
                             this.Invoke((Action)(() => updatePM(form1, messageFromServer.MessageText)));
                             //form1.MessagesListView.Items.Add(messageFromServer.MessageText);
-                            Application.Run(form1);
+                            //Application.Run(form1);
+                            this.Invoke((Action)(() => customShowForm(form1)));
+                            //form1.ShowDialog();
                             isPMFormOpen[messageFromServer.Sender] = true;
                         }
                         else
@@ -321,6 +323,12 @@ namespace Client_App
             Console.WriteLine("Listen Thread stopped: Logged Out");
             loginThread.Abort();
         }
+
+        private void customShowForm(PrivateMessageForm form1)
+        {
+            form1.Show();
+        }
+
         public bool IsFormOpen(PrivateMessageForm myForm)
         {
             foreach (PrivateMessageForm form in Application.OpenForms.OfType<PrivateMessageForm>())
@@ -580,7 +588,7 @@ namespace Client_App
                 // privateMessageForm.Name = onlineUsersLV.Items[otherParticipant_index].Text;
                 // userForms.Add(onlineUsersLV.Items[otherParticipant_index].Text, privateMessageForm);
                 isPMFormOpen[onlineUsersLV.Items[otherParticipant_index].Text] = true;
-                privateMessageForm.ShowDialog();
+                privateMessageForm.Show();
                 //Thread myT = new Thread(() => startPMForm(privateMessageForm));
                 //myT.Start();
                 //privateMessageForm.ShowDialog();
